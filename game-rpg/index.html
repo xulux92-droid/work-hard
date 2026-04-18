@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Crimson Anime Offline MMORPG Lite</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <div class="bg-orb orb-1"></div>
+  <div class="bg-orb orb-2"></div>
+  <div class="bg-orb orb-3"></div>
+
+  <div class="app-shell">
+    <header class="topbar glass">
+      <div class="brand-wrap">
+        <div class="brand-icon">⚔️</div>
+        <div>
+          <h1>Crimson Anime Offline MMORPG Lite</h1>
+          <p>Offline browser RPG • town • quests • dungeon • inventory • shop • synth music</p>
+        </div>
+      </div>
+      <div class="top-actions">
+        <button class="rainbow-btn" id="startMusicBtn">▶ Start Music</button>
+        <button class="ghost-btn" id="muteBtn">🔊 Sound On</button>
+        <button class="ghost-btn" id="saveBtn">💾 Save</button>
+        <button class="ghost-btn" id="resetBtn">♻ Reset</button>
+      </div>
+    </header>
+
+    <section class="hero glass">
+      <div class="hero-left">
+        <div class="hero-art">
+          <div class="anime-silhouette"></div>
+          <div class="hero-overlay">
+            <span class="hero-badge">OFFLINE RPG</span>
+            <h2>Rasakan vibe MMORPG tanpa server, tanpa drama, tanpa backend yang bikin dompet menjerit.</h2>
+            <p>
+              Jelajahi kota, ambil quest, lawan monster, upgrade gear, naik level, dan kumpulkan gold.
+              Semua progress disimpan lokal di browser.
+            </p>
+          </div>
+        </div>
+      </div>
+      <div class="hero-right stat-cards" id="heroStats"></div>
+    </section>
+
+    <main class="main-grid">
+      <aside class="sidebar glass">
+        <h3>Navigasi</h3>
+        <div class="nav-list">
+          <button class="nav-btn active" data-view="town">🏮 Town Hub</button>
+          <button class="nav-btn" data-view="quests">📜 Quest Board</button>
+          <button class="nav-btn" data-view="battle">⚔️ Battle Arena</button>
+          <button class="nav-btn" data-view="dungeon">🕳 Dungeon</button>
+          <button class="nav-btn" data-view="inventory">🎒 Inventory</button>
+          <button class="nav-btn" data-view="shop">🛒 Shop</button>
+          <button class="nav-btn" data-view="skills">✨ Skills</button>
+          <button class="nav-btn" data-view="journal">📘 Journal</button>
+        </div>
+
+        <div class="sidebar-box">
+          <h4>Quick Info</h4>
+          <div id="quickInfo"></div>
+        </div>
+
+        <div class="sidebar-box">
+          <h4>How to Play</h4>
+          <ul class="tiny-list">
+            <li>Buat karakter atau lanjut save lama</li>
+            <li>Ambil quest di Quest Board</li>
+            <li>Farm monster di Battle Arena / Dungeon</li>
+            <li>Beli gear di Shop</li>
+            <li>Upgrade skill dan push level</li>
+          </ul>
+        </div>
+      </aside>
+
+      <section class="content-grid">
+        <div class="view active" id="view-town">
+          <div class="panel glass">
+            <div class="panel-head">
+              <div>
+                <span class="eyebrow">🏮 TOWN HUB</span>
+                <h2>Crimson Sakura City</h2>
+                <p>Tempat aman untuk istirahat, ngobrol sama NPC, dan nyusun strategi. Begitulah, kota virtual lebih tenang daripada rapat manusia.</p>
+              </div>
+              <button class="rainbow-btn" id="restBtn">🛌 Rest & Heal</button>
+            </div>
+            <div class="scene town-scene">
+              <div class="npc-grid" id="npcGrid"></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="view" id="view-quests">
+          <div class="panel glass">
+            <div class="panel-head">
+              <div>
+                <span class="eyebrow">📜 QUEST BOARD</span>
+                <h2>Daily Quests</h2>
+                <p>Ambil job, selesaikan target, ambil hadiah. Dunia game selalu lebih jujur soal reward daripada dunia kerja.</p>
+              </div>
+            </div>
+            <div class="card-grid" id="questGrid"></div>
+          </div>
+        </div>
+
+        <div class="view" id="view-battle">
+          <div class="panel glass">
+            <div class="panel-head">
+              <div>
+                <span class="eyebrow">⚔️ BATTLE ARENA</span>
+                <h2>Fight Monsters</h2>
+                <p>Battle turn-based ringan tapi tetap seru. Klik lawan, hajar, heal, ulangi. Seperti hidup, hanya lebih jujur.</p>
+              </div>
+              <div class="battle-controls">
+                <button class="rainbow-btn" id="spawnEnemyBtn">🎯 Find Enemy</button>
+                <button class="ghost-btn" id="attackBtn">🗡 Attack</button>
+                <button class="ghost-btn" id="skillBtn">💥 Skill</button>
+                <button class="ghost-btn" id="healBtn">🧪 Potion</button>
+              </div>
+            </div>
+
+            <div class="battle-stage">
+              <div class="fighter-card player-card">
+                <div class="fighter-avatar player-avatar"></div>
+                <h3 id="battlePlayerName">Hero</h3>
+                <div class="hp-bar"><span id="playerHpBar"></span></div>
+                <p id="playerBattleStats"></p>
+              </div>
+
+              <div class="versus">VS</div>
+
+              <div class="fighter-card enemy-card">
+                <div class="fighter-avatar enemy-avatar" id="enemyAvatar">👹</div>
+                <h3 id="enemyName">No Enemy</h3>
+                <div class="hp-bar enemy-hp"><span id="enemyHpBar"></span></div>
+                <p id="enemyBattleStats"></p>
+              </div>
+            </div>
+
+            <div class="log-box" id="battleLog"></div>
+          </div>
+        </div>
+
+        <div class="view" id="view-dungeon">
+          <div class="panel glass">
+            <div class="panel-head">
+              <div>
+                <span class="eyebrow">🕳 DUNGEON</span>
+                <h2>Shadow Rift</h2>
+                <p>Dungeon run dengan beberapa room. Kalau menang semua, reward besar. Kalau kalah, ya pelajaran hidup.</p>
+              </div>
+              <button class="rainbow-btn" id="dungeonBtn">🚪 Start Dungeon Run</button>
+            </div>
+            <div class="dungeon-box">
+              <div class="dungeon-progress" id="dungeonProgress"></div>
+              <div class="log-box" id="dungeonLog"></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="view" id="view-inventory">
+          <div class="panel glass">
+            <div class="panel-head">
+              <div>
+                <span class="eyebrow">🎒 INVENTORY</span>
+                <h2>Your Stuff</h2>
+                <p>Item, gear, potion, material. Harta digital yang setidaknya gak makan tempat lemari.</p>
+              </div>
+            </div>
+            <div class="inventory-layout">
+              <div>
+                <h3 class="section-title">Equipment</h3>
+                <div class="equip-grid" id="equipGrid"></div>
+              </div>
+              <div>
+                <h3 class="section-title">Items</h3>
+                <div class="card-grid" id="inventoryGrid"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="view" id="view-shop">
+          <div class="panel glass">
+            <div class="panel-head">
+              <div>
+                <span class="eyebrow">🛒 SHOP</span>
+                <h2>Scarlet Merchant</h2>
+                <p>Beli potion, weapon, armor, dan charm. Kapitalisme, tapi estetik.</p>
+              </div>
+            </div>
+            <div class="card-grid" id="shopGrid"></div>
+          </div>
+        </div>
+
+        <div class="view" id="view-skills">
+          <div class="panel glass">
+            <div class="panel-head">
+              <div>
+                <span class="eyebrow">✨ SKILLS</span>
+                <h2>Skill Tree Lite</h2>
+                <p>Pilih gaya main lo. Slash, burst, atau sustain. Minimal di sini pilihan hidup ada efek nyata.</p>
+              </div>
+            </div>
+            <div class="card-grid" id="skillGrid"></div>
+          </div>
+        </div>
+
+        <div class="view" id="view-journal">
+          <div class="panel glass">
+            <div class="panel-head">
+              <div>
+                <span class="eyebrow">📘 JOURNAL</span>
+                <h2>Adventure Log</h2>
+                <p>Semua event penting, kemenangan, dan kebodohan hero tercatat rapi.</p>
+              </div>
+            </div>
+            <div class="log-box large" id="journalLog"></div>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <section class="panel glass creator-panel" id="creatorPanel">
+      <div class="panel-head">
+        <div>
+          <span class="eyebrow">🧬 CHARACTER CREATION</span>
+          <h2>Create Your Hero</h2>
+          <p>Pilih nama dan class. Lalu mulai grind, karena bahkan di game pun progress butuh kerja.</p>
+        </div>
+      </div>
+      <div class="creator-grid">
+        <label>
+          <span>Hero Name</span>
+          <input type="text" id="heroNameInput" maxlength="18" placeholder="Masukkan nama hero" />
+        </label>
+        <label>
+          <span>Class</span>
+          <select id="heroClassInput">
+            <option value="Warrior">Warrior</option>
+            <option value="Mage">Mage</option>
+            <option value="Assassin">Assassin</option>
+          </select>
+        </label>
+        <label>
+          <span>Avatar Style</span>
+          <select id="heroAvatarInput">
+            <option value="🌸">Sakura</option>
+            <option value="🔥">Crimson</option>
+            <option value="⚡">Volt</option>
+          </select>
+        </label>
+        <button class="rainbow-btn" id="createHeroBtn">🚀 Start Adventure</button>
+      </div>
+    </section>
+  </div>
+
+  <script src="game.js"></script>
+</body>
+</html>
