@@ -36,6 +36,7 @@ const suspiciousPatterns = [
 
 let selectedUploadFile = null;
 let savedEditorRange = null;
+let lastUploadObjectUrl = "";
 
 function showView(viewName) {
   views.forEach(view => {
@@ -231,17 +232,22 @@ function setSelectedUploaderFile(file) {
 
   const meta = document.getElementById("uploaderMeta");
   const preview = document.getElementById("uploaderPreview");
+  const uploadBar = document.getElementById("uploadBar");
+  const uploadPercent = document.getElementById("uploadPercent");
 
   if (meta) {
     meta.innerHTML = `File: <b>${escapeHtml(file.name)}</b> • Size: <b>${formatBytes(file.size)}</b> • Type: <b>${escapeHtml(file.type || "unknown")}</b>`;
   }
 
+  if (uploadBar) uploadBar.style.width = "100%";
+  if (uploadPercent) uploadPercent.textContent = "100%";
+
   if (preview) {
     if (file.type.startsWith("image/")) {
-      const url = URL.createObjectURL(file);
-      preview.innerHTML = `<img class="upload-preview-image" src="${url}" alt="preview" />`;
+      const previewUrl = URL.createObjectURL(file);
+      preview.innerHTML = `<img class="upload-preview-image" src="${previewUrl}" alt="preview" />`;
     } else {
-      preview.innerHTML = `<div class="upload-preview-file">File siap diupload: ${escapeHtml(file.name)}</div>`;
+      preview.innerHTML = `<div class="upload-preview-file">File siap dipakai: ${escapeHtml(file.name)}</div>`;
     }
   }
 
@@ -249,14 +255,22 @@ function setSelectedUploaderFile(file) {
 }
 
 function fillLocalUploadOutput(file) {
+  if (lastUploadObjectUrl) {
+    try {
+      URL.revokeObjectURL(lastUploadObjectUrl);
+    } catch (e) {}
+  }
+
   const objectUrl = URL.createObjectURL(file);
+  lastUploadObjectUrl = objectUrl;
+
   const uploadUrl = document.getElementById("uploadUrl");
-  const uploadDirectUrl = document.getElementById("uploadDirectUrl");
+  const uploadFilename = document.getElementById("uploadFilename");
   const uploadHtmlEmbed = document.getElementById("uploadHtmlEmbed");
   const uploadMarkdown = document.getElementById("uploadMarkdown");
 
   if (uploadUrl) uploadUrl.value = objectUrl;
-  if (uploadDirectUrl) uploadDirectUrl.value = objectUrl;
+  if (uploadFilename) uploadFilename.value = file.name;
 
   if (file.type.startsWith("image/")) {
     if (uploadHtmlEmbed) uploadHtmlEmbed.value = `<img src="${objectUrl}" alt="${escapeHtml(file.name)}" />`;
@@ -265,104 +279,6 @@ function fillLocalUploadOutput(file) {
     if (uploadHtmlEmbed) uploadHtmlEmbed.value = `<a href="${objectUrl}" download="${escapeHtml(file.name)}">${escapeHtml(file.name)}</a>`;
     if (uploadMarkdown) uploadMarkdown.value = `[${file.name}](${objectUrl})`;
   }
-}
-
-async function uploadSelectedFile() {
-  if (!selectedUploadFile) {
-    alert("Pilih file dulu.");
-    return;
-  }
-
-  const provider = document.getElementById("uploadProvider")?.value || "local";
-
-  if (provider === "local") {
-    animateUploadBar(true);
-    alert("Mode Local Preview aktif. File tidak dikirim ke server, tapi output lokal sudah dibuat.");
-    return;
-  }
-
-  if (provider === "imgbb") {
-    await uploadToImgBB(selectedUploadFile);
-  }
-}
-
-async function uploadToImgBB(file) {
-  const key = document.getElementById("imgbbApiKey")?.value.trim();
-  if (!key) {
-    alert("Isi ImgBB API key dulu.");
-    return;
-  }
-
-  try {
-    animateUploadBar(false, 15);
-
-    const formData = new FormData();
-    formData.append("image", file);
-
-    const response = await fetch(`https://api.imgbb.com/1/upload?key=${encodeURIComponent(key)}`, {
-      method: "POST",
-      body: formData
-    });
-
-    animateUploadBar(false, 70);
-
-    const data = await response.json();
-
-    if (!response.ok || !data?.success) {
-      throw new Error(data?.error?.message || "Upload gagal.");
-    }
-
-    const result = data.data;
-    const url = result.url || "";
-    const display = result.display_url || url;
-    const direct = result.image?.url || url;
-
-    const uploadUrl = document.getElementById("uploadUrl");
-    const uploadDirectUrl = document.getElementById("uploadDirectUrl");
-    const uploadHtmlEmbed = document.getElementById("uploadHtmlEmbed");
-    const uploadMarkdown = document.getElementById("uploadMarkdown");
-
-    if (uploadUrl) uploadUrl.value = display;
-    if (uploadDirectUrl) uploadDirectUrl.value = direct;
-    if (uploadHtmlEmbed) uploadHtmlEmbed.value = `<img src="${direct}" alt="${escapeHtml(file.name)}" />`;
-    if (uploadMarkdown) uploadMarkdown.value = `![${file.name}](${direct})`;
-
-    animateUploadBar(false, 100);
-    alert("Upload ImgBB berhasil.");
-  } catch (error) {
-    animateUploadBar(false, 0);
-    alert("Upload ImgBB gagal: " + error.message);
-  }
-}
-
-function animateUploadBar(forceDone = false, setValue = null) {
-  const bar = document.getElementById("uploadBar");
-  const percent = document.getElementById("uploadPercent");
-  if (!bar || !percent) return;
-
-  if (forceDone) {
-    bar.style.width = "100%";
-    percent.textContent = "100%";
-    return;
-  }
-
-  if (typeof setValue === "number") {
-    const clamped = Math.max(0, Math.min(100, setValue));
-    bar.style.width = clamped + "%";
-    percent.textContent = clamped + "%";
-    return;
-  }
-
-  let value = 0;
-  bar.style.width = "0%";
-  percent.textContent = "0%";
-
-  const timer = setInterval(() => {
-    value += 10;
-    bar.style.width = value + "%";
-    percent.textContent = value + "%";
-    if (value >= 100) clearInterval(timer);
-  }, 60);
 }
 
 function copyUploaderField(id) {
@@ -375,10 +291,17 @@ function copyUploaderField(id) {
 function resetUploader() {
   selectedUploadFile = null;
 
+  if (lastUploadObjectUrl) {
+    try {
+      URL.revokeObjectURL(lastUploadObjectUrl);
+    } catch (e) {}
+    lastUploadObjectUrl = "";
+  }
+
   const uploaderInput = document.getElementById("uploaderInput");
   const uploaderMeta = document.getElementById("uploaderMeta");
   const uploadUrl = document.getElementById("uploadUrl");
-  const uploadDirectUrl = document.getElementById("uploadDirectUrl");
+  const uploadFilename = document.getElementById("uploadFilename");
   const uploadHtmlEmbed = document.getElementById("uploadHtmlEmbed");
   const uploadMarkdown = document.getElementById("uploadMarkdown");
   const uploadBar = document.getElementById("uploadBar");
@@ -388,7 +311,7 @@ function resetUploader() {
   if (uploaderInput) uploaderInput.value = "";
   if (uploaderMeta) uploaderMeta.textContent = "Belum ada file dipilih.";
   if (uploadUrl) uploadUrl.value = "";
-  if (uploadDirectUrl) uploadDirectUrl.value = "";
+  if (uploadFilename) uploadFilename.value = "";
   if (uploadHtmlEmbed) uploadHtmlEmbed.value = "";
   if (uploadMarkdown) uploadMarkdown.value = "";
   if (uploadBar) uploadBar.style.width = "0%";
@@ -558,7 +481,7 @@ function insertTablePrompt() {
 
   if (!rows || !cols || rows < 1 || cols < 1) return;
 
-  let html = '<table><tbody>';
+  let html = "<table><tbody>";
   for (let r = 0; r < rows; r++) {
     html += "<tr>";
     for (let c = 0; c < cols; c++) {
@@ -581,6 +504,7 @@ function normalizeEditorContent() {
 
   if (!editor.innerHTML.trim()) {
     editor.innerHTML = "<p><br></p>";
+    updateWordHtmlPreview();
     return;
   }
 
@@ -678,6 +602,7 @@ function cleanWordHtml() {
   editor.innerHTML = html.trim() || "<p><br></p>";
   normalizeEditorContent();
   saveEditorSelection();
+  convertWordToHtml();
   alert("HTML berhasil dibersihkan.");
 }
 
@@ -692,7 +617,6 @@ function updateWordHtmlPreview() {
   const editor = getEditor();
   const preview = document.getElementById("wordHtmlPreview");
   if (!editor || !preview) return;
-
   preview.innerHTML = editor.innerHTML.trim() || "Preview HTML akan muncul di sini.";
 }
 
@@ -890,23 +814,22 @@ function normalizeDomainInput(value) {
     .replace(/\/.*$/, "");
 }
 
-function calculateDomainScore(domain) {
+function calculateDomainPreviewMetrics(domain) {
   const core = domain.split(".")[0] || "";
-  const tld = domain.split(".").pop() || "";
   const length = core.length;
   const hasHyphen = domain.includes("-");
   const hasDigits = /\d/.test(domain);
-  const shortBonus = length <= 10 ? 18 : length <= 15 ? 10 : 2;
-  const hyphenPenalty = hasHyphen ? 12 : 0;
-  const digitPenalty = hasDigits ? 10 : 0;
-  const commonTldBonus = ["com", "net", "org", "id", "co", "io"].includes(tld) ? 10 : 4;
+  const tld = domain.split(".").pop() || "";
 
-  const health = Math.max(20, Math.min(100, 70 + shortBonus + commonTldBonus - hyphenPenalty - digitPenalty));
-  const brand = Math.max(20, Math.min(100, 72 + shortBonus - hyphenPenalty - digitPenalty));
-  const seo = Math.max(20, Math.min(100, 68 + commonTldBonus - hyphenPenalty - digitPenalty));
-  const readability = Math.max(20, Math.min(100, 80 - Math.max(0, length - 8) * 3 - hyphenPenalty - digitPenalty));
+  const dr = Math.max(10, Math.min(95, 70 - (length > 12 ? 12 : length > 8 ? 6 : 0) - (hasHyphen ? 8 : 0) - (hasDigits ? 6 : 0) + (["com", "net", "org", "id", "co", "io"].includes(tld) ? 8 : 0)));
+  const da = Math.max(10, Math.min(95, dr - 3 + (core.length <= 8 ? 4 : 0)));
+  const pa = Math.max(10, Math.min(95, da - 2 + (core.length <= 10 ? 3 : 0)));
 
-  return { health, brand, seo, readability, length };
+  const age = core.length <= 6 ? "5+ Tahun*" : core.length <= 10 ? "2-4 Tahun*" : "Baru / Unknown*";
+  const backlinks = dr >= 70 ? "Tinggi*" : dr >= 50 ? "Sedang*" : "Rendah*";
+  const traffic = da >= 70 ? "Potensial Tinggi*" : da >= 50 ? "Potensial Sedang*" : "Potensial Rendah*";
+
+  return { dr, da, pa, age, backlinks, traffic };
 }
 
 function checkDomainQuality() {
@@ -931,76 +854,78 @@ function checkDomainQuality() {
     return;
   }
 
-  const parts = domain.split(".");
-  const tld = parts[parts.length - 1];
-  const core = parts.slice(0, -1).join(".");
-  const score = calculateDomainScore(domain);
-  const status = score.health >= 80 ? "Strong" : score.health >= 60 ? "Good" : "Weak";
+  const metrics = calculateDomainPreviewMetrics(domain);
 
-  const metricDA = document.getElementById("metricDA");
-  const metricPA = document.getElementById("metricPA");
-  const metricDR = document.getElementById("metricDR");
-  const metricBL = document.getElementById("metricBL");
-  const metricTF = document.getElementById("metricTF");
-  const metricKI = document.getElementById("metricKI");
-
-  if (metricDA) metricDA.textContent = score.health;
-  if (metricPA) metricPA.textContent = score.brand;
-  if (metricDR) metricDR.textContent = score.seo;
-  if (metricBL) metricBL.textContent = score.length;
-  if (metricTF) metricTF.textContent = score.readability;
-  if (metricKI) metricKI.textContent = status;
-
-  const recommendations = [];
-  if (score.length > 14) recommendations.push("Nama domain cukup panjang. Coba lebih ringkas.");
-  if (domain.includes("-")) recommendations.push("Hindari tanda minus kalau mau brandability lebih kuat.");
-  if (/\d/.test(domain)) recommendations.push("Angka di domain bisa menurunkan kesan brand profesional.");
-  if (!["com", "net", "org", "id", "co", "io"].includes(tld)) recommendations.push("TLD ini kurang umum. Gunakan .com / .id / .io kalau ingin lebih familiar.");
-  if (!recommendations.length) recommendations.push("Struktur domain sudah cukup bagus untuk branding awal.");
+  setText("metricDR", metrics.dr);
+  setText("metricDA", metrics.da);
+  setText("metricPA", metrics.pa);
+  setText("metricAGE", metrics.age);
+  setText("metricBL", metrics.backlinks);
+  setText("metricTF", metrics.traffic);
 
   note.innerHTML = `
     <b>Domain:</b> ${escapeHtml(domain)}<br>
-    <b>Core Name:</b> ${escapeHtml(core)}<br>
-    <b>TLD:</b> .${escapeHtml(tld)}<br>
-    <b>Status:</b> ${status}<br>
-    <b>Analisa:</b> Ini preview analyzer frontend, jadi fokus ke kualitas nama domain, bukan authority live dari tool pihak ketiga.
+    <b>Status:</b> Format valid<br>
+    <b>Mode:</b> Preview SEO-style frontend<br>
+    <b>Catatan:</b> Nilai di atas bukan data Ahrefs/Moz real. Untuk cek real, pakai tombol Open Ahrefs / Open Whois.
   `;
 
   tips.innerHTML = `
-    <b>Rekomendasi:</b><br>
-    ${recommendations.map(item => `• ${escapeHtml(item)}`).join("<br>")}<br><br>
+    <b>Shortcut:</b><br>
+    • Klik <b>Open Ahrefs</b> untuk cek domain di Ahrefs<br>
+    • Klik <b>Open Whois</b> untuk cek data domain / whois<br><br>
     <b>Checklist SEO awal:</b><br>
-    • gunakan HTTPS<br>
-    • pastikan title & meta description unik<br>
-    • buat sitemap dan robots.txt<br>
+    • pakai HTTPS<br>
+    • title & meta description unik<br>
+    • sitemap dan robots.txt aktif<br>
     • cek indexability setelah domain live
   `;
 }
 
-function resetDomainMetricsOnly() {
-  const metricDA = document.getElementById("metricDA");
-  const metricPA = document.getElementById("metricPA");
-  const metricDR = document.getElementById("metricDR");
-  const metricBL = document.getElementById("metricBL");
-  const metricTF = document.getElementById("metricTF");
-  const metricKI = document.getElementById("metricKI");
+function openAhrefsDomain() {
+  const domainInput = document.getElementById("domainInput");
+  if (!domainInput) return;
 
-  if (metricDA) metricDA.textContent = "-";
-  if (metricPA) metricPA.textContent = "-";
-  if (metricDR) metricDR.textContent = "-";
-  if (metricBL) metricBL.textContent = "-";
-  if (metricTF) metricTF.textContent = "-";
-  if (metricKI) metricKI.textContent = "-";
+  const domain = normalizeDomainInput(domainInput.value);
+  if (!domain) {
+    alert("Masukkan domain dulu.");
+    return;
+  }
+
+  window.open(`https://ahrefs.com/site-explorer/overview/v2/subdomains/live?target=${encodeURIComponent(domain)}`, "_blank");
+}
+
+function openWhoisDomain() {
+  const domainInput = document.getElementById("domainInput");
+  if (!domainInput) return;
+
+  const domain = normalizeDomainInput(domainInput.value);
+  if (!domain) {
+    alert("Masukkan domain dulu.");
+    return;
+  }
+
+  window.open(`https://www.whois.com/whois/${encodeURIComponent(domain)}`, "_blank");
+}
+
+function resetDomainMetricsOnly() {
+  setText("metricDR", "-");
+  setText("metricDA", "-");
+  setText("metricPA", "-");
+  setText("metricAGE", "-");
+  setText("metricBL", "-");
+  setText("metricTF", "-");
 }
 
 function resetDomainChecker() {
   const input = document.getElementById("domainInput");
   const note = document.getElementById("domainCheckerNote");
   const tips = document.getElementById("domainCheckerTips");
+
   if (input) input.value = "";
   resetDomainMetricsOnly();
   if (note) note.textContent = "Belum ada domain dicek.";
-  if (tips) tips.textContent = "Tips dan rekomendasi akan muncul di sini.";
+  if (tips) tips.textContent = "Tips dan shortcut akan muncul di sini.";
 }
 
 function loadMusic(event) {
@@ -1046,7 +971,7 @@ function runTerminalCommand() {
   } else if (cmd === "whoami") {
     response = "Current user: " + (localStorage.getItem("xuUser") || "Guest");
   } else if (cmd === "pro") {
-    response = "Word to HTML PRO, Scanner PRO, Domain Checker+, Uploader PRO active.";
+    response = "Word to HTML PRO, Scanner PRO, Domain Checker+, Uploader local mode active.";
   } else if (cmd === "clear") {
     output.textContent = "Xu_SEO terminal initialized...\nType: help";
     input.value = "";
@@ -1105,6 +1030,11 @@ function resetAppData() {
   localStorage.removeItem("xuNoteTitle");
   localStorage.removeItem("xuNoteText");
   location.reload();
+}
+
+function setText(id, value) {
+  const el = document.getElementById(id);
+  if (el) el.textContent = value;
 }
 
 function escapeHtml(value) {
