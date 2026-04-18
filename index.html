@@ -1,0 +1,459 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>🔥Xu_SEO🔥 Dashboard</title>
+  <link rel="stylesheet" href="assets/style.css" />
+</head>
+<body>
+  <div class="app-shell">
+    <header class="topbar">
+      <div class="brand">
+        <div class="brand-badge">🔥</div>
+        <div>
+          <h1 id="brandTitle">🔥Xu_SEO🔥</h1>
+          <p>Cyberpunk Neon Tosca Workspace</p>
+        </div>
+      </div>
+
+      <div class="top-actions">
+        <span class="chip" id="userStatus">User: Guest</span>
+        <button class="ghost-btn" type="button" onclick="showView('auth')">Login / Register</button>
+        <button class="solid-btn" type="button" onclick="showView('dashboard')">Open Dashboard</button>
+      </div>
+    </header>
+
+    <div class="main-grid">
+      <aside class="sidebar">
+        <h3>Navigation</h3>
+        <div class="nav-list">
+          <button class="nav-btn active" data-view-target="dashboard" onclick="showView('dashboard')"><span>🏠 Dashboard</span><span>›</span></button>
+          <button class="nav-btn" data-view-target="auth" onclick="showView('auth')"><span>🔐 Login / Register</span><span>›</span></button>
+          <button class="nav-btn" data-view-target="notepad" onclick="showView('notepad')"><span>📒 Notepad</span><span>›</span></button>
+          <button class="nav-btn" data-view-target="wordcounter" onclick="showView('wordcounter')"><span>📝 Word Counter</span><span>›</span></button>
+          <button class="nav-btn" data-view-target="filemanager" onclick="showView('filemanager')"><span>📁 File Manager</span><span>›</span></button>
+          <button class="nav-btn" data-view-target="uploader" onclick="showView('uploader')"><span>🚀 File Uploader</span><span>›</span></button>
+          <button class="nav-btn" data-view-target="calculator" onclick="showView('calculator')"><span>🧮 Calculator</span><span>›</span></button>
+          <button class="nav-btn" data-view-target="wordtohtml" onclick="showView('wordtohtml')"><span>🔤 Word to HTML</span><span>›</span></button>
+          <button class="nav-btn" data-view-target="scanner" onclick="showView('scanner')"><span>🛡️ Scanner</span><span>›</span></button>
+          <button class="nav-btn" data-view-target="domainchecker" onclick="showView('domainchecker')"><span>🌐 Domain Checker</span><span>›</span></button>
+          <button class="nav-btn" data-view-target="musicplayer" onclick="showView('musicplayer')"><span>🎵 Music Player</span><span>›</span></button>
+          <button class="nav-btn" data-view-target="terminal" onclick="showView('terminal')"><span>⌨️ Terminal</span><span>›</span></button>
+          <button class="nav-btn" data-view-target="settings" onclick="showView('settings')"><span>⚙️ Settings</span><span>›</span></button>
+        </div>
+
+        <div class="sidebar-card">
+          <strong>Status Project</strong>
+          <p>Versi ini sudah satu paket rapi. Tinggal tempel file, commit, refresh, dan jangan salah folder kayak biasa.</p>
+        </div>
+
+        <div class="sidebar-card">
+          <strong>Mode Sekarang</strong>
+          <p>Full GitHub-only. Fitur live SEO metric butuh API kalau nanti mau beneran real.</p>
+        </div>
+      </aside>
+
+      <main class="content">
+        <!-- DASHBOARD -->
+        <section class="view active" id="view-dashboard">
+          <div class="hero">
+            <div class="panel panel-body">
+              <div class="eyebrow">⚡ Build Aktif</div>
+              <h2>Dashboard kerja SEO + tools utility sekarang lebih lengkap.</h2>
+              <p>
+                Semua fitur inti sekarang udah masuk: uploader drag-drop, editor Word to HTML,
+                scanner pattern, domain checker API-ready, dan tools kerja lokal lainnya.
+              </p>
+              <div class="search-row">
+                <input type="text" id="toolSearch" placeholder="Cari tools..." oninput="filterTools()" />
+                <button class="ghost-btn" type="button" onclick="resetSearch()">Reset</button>
+              </div>
+            </div>
+
+            <div class="panel panel-body">
+              <div class="stat-grid">
+                <div class="mini-stat"><span class="label">Total Tools</span><span class="value" id="toolCount">12</span></div>
+                <div class="mini-stat"><span class="label">Mode</span><span class="value">LIVE</span></div>
+                <div class="mini-stat"><span class="label">Storage</span><span class="value">LOCAL</span></div>
+                <div class="mini-stat"><span class="label">User</span><span class="value" id="activeUserBox">Guest</span></div>
+              </div>
+            </div>
+          </div>
+
+          <div class="panel panel-body">
+            <div class="section-head">
+              <div>
+                <h3 class="page-title small-title">Quick Launch</h3>
+                <div class="page-subtitle">Launcher semua tools utama.</div>
+              </div>
+              <span class="chip">Theme: Neon Tosca</span>
+            </div>
+
+            <div class="tool-grid" id="toolGrid">
+              <article class="tool-card" data-name="dashboard home statistik tools launcher main"><div><div class="tool-icon">🏠</div><h4>Dashboard</h4><p>Ringkasan semua fitur.</p></div><div class="tool-meta"><span class="tag">Main</span><button class="small-btn" onclick="showView('dashboard')">OPEN</button></div></article>
+              <article class="tool-card" data-name="auth login register user"><div><div class="tool-icon">🔐</div><h4>Auth</h4><p>Login/register lokal.</p></div><div class="tool-meta"><span class="tag">Auth</span><button class="small-btn" onclick="showView('auth')">OPEN</button></div></article>
+              <article class="tool-card" data-name="notepad notes memo"><div><div class="tool-icon">📒</div><h4>Notepad</h4><p>Catatan kerja cepat.</p></div><div class="tool-meta"><span class="tag">Notes</span><button class="small-btn" onclick="showView('notepad')">OPEN</button></div></article>
+              <article class="tool-card" data-name="word counter karakter kata"><div><div class="tool-icon">📝</div><h4>Word Counter</h4><p>Hitung kata, karakter, paragraf.</p></div><div class="tool-meta"><span class="tag">SEO</span><button class="small-btn" onclick="showView('wordcounter')">OPEN</button></div></article>
+              <article class="tool-card" data-name="file manager local folder"><div><div class="tool-icon">📁</div><h4>File Manager</h4><p>Lihat file lokal.</p></div><div class="tool-meta"><span class="tag">Files</span><button class="small-btn" onclick="showView('filemanager')">OPEN</button></div></article>
+              <article class="tool-card" data-name="uploader drag drop url wget curl"><div><div class="tool-icon">🚀</div><h4>Uploader</h4><p>Drag-drop + output URL/wget/curl.</p></div><div class="tool-meta"><span class="tag">Upload</span><button class="small-btn" onclick="showView('uploader')">OPEN</button></div></article>
+              <article class="tool-card" data-name="calculator hitung math"><div><div class="tool-icon">🧮</div><h4>Calculator</h4><p>Kalkulator cepat.</p></div><div class="tool-meta"><span class="tag">Math</span><button class="small-btn" onclick="showView('calculator')">OPEN</button></div></article>
+              <article class="tool-card" data-name="word to html editor bold italic underline justify heading list table"><div><div class="tool-icon">🔤</div><h4>Word to HTML</h4><p>Mini editor rich-text ke HTML.</p></div><div class="tool-meta"><span class="tag">HTML</span><button class="small-btn" onclick="showView('wordtohtml')">OPEN</button></div></article>
+              <article class="tool-card" data-name="scanner code malware suspicious pattern php"><div><div class="tool-icon">🛡️</div><h4>Scanner</h4><p>Scan text/file berdasarkan pattern mencurigakan.</p></div><div class="tool-meta"><span class="tag">Scan</span><button class="small-btn" onclick="showView('scanner')">OPEN</button></div></article>
+              <article class="tool-card" data-name="domain checker da pa dr backlinks traffic kominfo"><div><div class="tool-icon">🌐</div><h4>Domain Checker</h4><p>Panel checker kualitas domain API-ready.</p></div><div class="tool-meta"><span class="tag">SEO</span><button class="small-btn" onclick="showView('domainchecker')">OPEN</button></div></article>
+              <article class="tool-card" data-name="music player audio mp3"><div><div class="tool-icon">🎵</div><h4>Music Player</h4><p>Putar audio lokal.</p></div><div class="tool-meta"><span class="tag">Media</span><button class="small-btn" onclick="showView('musicplayer')">OPEN</button></div></article>
+              <article class="tool-card" data-name="terminal shell command"><div><div class="tool-icon">⌨️</div><h4>Terminal</h4><p>Console demo.</p></div><div class="tool-meta"><span class="tag">System</span><button class="small-btn" onclick="showView('terminal')">OPEN</button></div></article>
+            </div>
+          </div>
+        </section>
+
+        <!-- AUTH -->
+        <section class="view" id="view-auth">
+          <div class="panel panel-body">
+            <div class="eyebrow">🔐 Auth Workspace</div>
+            <h2 class="page-title">Login dan register.</h2>
+            <div class="auth-wrap top-gap">
+              <div class="auth-box">
+                <h4>Login</h4>
+                <div class="form-grid">
+                  <input type="text" id="loginUsername" placeholder="Username" />
+                  <input type="password" id="loginPassword" placeholder="Password" />
+                  <button class="solid-btn" onclick="simulateLogin()">Masuk</button>
+                </div>
+              </div>
+              <div class="auth-box">
+                <h4>Register</h4>
+                <div class="form-grid">
+                  <input type="text" id="registerUsername" placeholder="Buat username" />
+                  <input type="email" id="registerEmail" placeholder="Email" />
+                  <input type="password" id="registerPassword" placeholder="Password" />
+                  <button class="solid-btn" onclick="simulateRegister()">Daftar</button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- NOTEPAD -->
+        <section class="view" id="view-notepad">
+          <div class="panel panel-body">
+            <div class="eyebrow">📒 Notes</div>
+            <h2 class="page-title">Notepad kerja cepat.</h2>
+            <div class="form-grid top-gap">
+              <input type="text" id="noteTitle" placeholder="Judul catatan" />
+              <textarea id="notepadText" placeholder="Tulis catatan..."></textarea>
+              <div class="action-row">
+                <button class="solid-btn" onclick="saveNote()">Simpan</button>
+                <button class="ghost-btn" onclick="clearNote()">Hapus</button>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- WORD COUNTER -->
+        <section class="view" id="view-wordcounter">
+          <div class="panel panel-body">
+            <div class="eyebrow">📝 Content Meter</div>
+            <h2 class="page-title">Word Counter.</h2>
+            <div class="form-grid top-gap">
+              <textarea id="wordCounterInput" placeholder="Tempel teks di sini..." oninput="countWords()"></textarea>
+            </div>
+            <div class="counter-box">
+              <div class="counter-pill">Kata<strong id="countWords">0</strong></div>
+              <div class="counter-pill">Karakter<strong id="countChars">0</strong></div>
+              <div class="counter-pill">Paragraf<strong id="countParagraphs">0</strong></div>
+              <div class="counter-pill">Baca<strong id="countRead">0 dtk</strong></div>
+            </div>
+          </div>
+        </section>
+
+        <!-- FILE MANAGER -->
+        <section class="view" id="view-filemanager">
+          <div class="panel panel-body">
+            <div class="eyebrow">📁 File Manager</div>
+            <h2 class="page-title">File Manager lokal.</h2>
+            <div class="dual-grid top-gap">
+              <div class="card">
+                <h4>Upload File</h4>
+                <div class="form-grid">
+                  <input type="file" id="fileInput" multiple onchange="renderFiles()" />
+                  <button class="ghost-btn" onclick="clearFiles()">Reset File</button>
+                </div>
+              </div>
+              <div class="card">
+                <h4>Upload Folder</h4>
+                <div class="form-grid">
+                  <input type="file" id="folderInput" webkitdirectory directory multiple onchange="renderFolderFiles(event)" />
+                  <button class="ghost-btn" onclick="clearFolder()">Reset Folder</button>
+                </div>
+              </div>
+            </div>
+            <div class="file-list top-gap" id="fileList">
+              <div class="empty-state">Belum ada file yang dipilih.</div>
+            </div>
+          </div>
+        </section>
+
+        <!-- UPLOADER -->
+        <section class="view" id="view-uploader">
+          <div class="panel panel-body">
+            <div class="eyebrow">🚀 File Uploader</div>
+            <h2 class="page-title">Uploader drag-drop.</h2>
+
+            <div class="dual-grid top-gap">
+              <div class="card">
+                <h4>Drop Zone</h4>
+                <div id="dropzone" class="dropzone">
+                  <p>Drop file di sini atau pilih manual</p>
+                  <input type="file" id="uploaderInput" class="hidden" onchange="handleUploaderFile(event)" />
+                  <div class="action-row top-gap-sm">
+                    <button class="solid-btn" onclick="document.getElementById('uploaderInput').click()">Pilih File</button>
+                    <button class="ghost-btn" onclick="resetUploader()">Reset</button>
+                  </div>
+                </div>
+
+                <div class="form-grid top-gap-sm">
+                  <div class="empty-state" id="uploaderMeta">Belum ada file dipilih.</div>
+                  <div>
+                    <div class="section-head tight-gap">
+                      <span class="muted">Progress</span>
+                      <span class="muted" id="uploadPercent">0%</span>
+                    </div>
+                    <div class="progress-shell"><div id="uploadBar" class="progress-bar-fill"></div></div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="card">
+                <h4>Generated Output</h4>
+                <div class="form-grid">
+                  <textarea id="uploadUrl" readonly placeholder="Download URL"></textarea>
+                  <button class="ghost-btn left-btn" onclick="copyUploaderField('uploadUrl')">Copy URL</button>
+
+                  <textarea id="uploadWget" readonly placeholder="wget command"></textarea>
+                  <textarea id="uploadCurl" readonly placeholder="curl command"></textarea>
+
+                  <div class="action-row">
+                    <button class="ghost-btn" onclick="copyUploaderField('uploadWget')">Copy wget</button>
+                    <button class="ghost-btn" onclick="copyUploaderField('uploadCurl')">Copy curl</button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- CALCULATOR -->
+        <section class="view" id="view-calculator">
+          <div class="panel panel-body">
+            <div class="eyebrow">🧮 Calculator</div>
+            <h2 class="page-title">Kalkulator cepat.</h2>
+            <div class="form-grid top-gap">
+              <input type="text" id="calcDisplay" placeholder="0" readonly />
+              <div class="calc-grid">
+                <button class="ghost-btn" onclick="appendCalc('7')">7</button>
+                <button class="ghost-btn" onclick="appendCalc('8')">8</button>
+                <button class="ghost-btn" onclick="appendCalc('9')">9</button>
+                <button class="solid-btn" onclick="appendCalc('/')">÷</button>
+                <button class="ghost-btn" onclick="appendCalc('4')">4</button>
+                <button class="ghost-btn" onclick="appendCalc('5')">5</button>
+                <button class="ghost-btn" onclick="appendCalc('6')">6</button>
+                <button class="solid-btn" onclick="appendCalc('*')">×</button>
+                <button class="ghost-btn" onclick="appendCalc('1')">1</button>
+                <button class="ghost-btn" onclick="appendCalc('2')">2</button>
+                <button class="ghost-btn" onclick="appendCalc('3')">3</button>
+                <button class="solid-btn" onclick="appendCalc('-')">−</button>
+                <button class="ghost-btn" onclick="appendCalc('0')">0</button>
+                <button class="ghost-btn" onclick="appendCalc('.')">.</button>
+                <button class="danger-btn" onclick="clearCalc()">C</button>
+                <button class="solid-btn" onclick="appendCalc('+')">+</button>
+              </div>
+              <div class="action-row">
+                <button class="solid-btn" onclick="calculateResult()">Hitung</button>
+                <button class="ghost-btn" onclick="backspaceCalc()">Backspace</button>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- WORD TO HTML -->
+        <section class="view" id="view-wordtohtml">
+          <div class="panel panel-body">
+            <div class="eyebrow">🔤 Word to HTML</div>
+            <h2 class="page-title">Converter teks ke HTML yang lebih lengkap.</h2>
+
+            <div class="card top-gap">
+              <h4>Toolbar</h4>
+              <div class="editor-toolbar">
+                <button class="small-btn" onclick="editorCommand('bold')"><b>B</b></button>
+                <button class="small-btn" onclick="editorCommand('italic')"><i>I</i></button>
+                <button class="small-btn" onclick="editorCommand('underline')"><u>U</u></button>
+
+                <button class="small-btn" onclick="setParagraph()">P</button>
+                <button class="small-btn" onclick="formatBlockTag('h1')">H1</button>
+                <button class="small-btn" onclick="formatBlockTag('h2')">H2</button>
+                <button class="small-btn" onclick="formatBlockTag('h3')">H3</button>
+
+                <button class="small-btn" onclick="editorCommand('insertUnorderedList')">UL</button>
+                <button class="small-btn" onclick="editorCommand('insertOrderedList')">OL</button>
+                <button class="small-btn" onclick="formatBlockTag('blockquote')">Quote</button>
+
+                <button class="small-btn" onclick="editorCommand('justifyLeft')">Left</button>
+                <button class="small-btn" onclick="editorCommand('justifyCenter')">Center</button>
+                <button class="small-btn" onclick="editorCommand('justifyRight')">Right</button>
+                <button class="small-btn" onclick="editorCommand('justifyFull')">Justify</button>
+
+                <button class="small-btn" onclick="insertEditorLink()">Link</button>
+                <button class="small-btn" onclick="editorCommand('unlink')">Unlink</button>
+                <button class="small-btn" onclick="editorCommand('removeFormat')">Clear</button>
+                <button class="small-btn" onclick="insertTablePrompt()">Table</button>
+              </div>
+            </div>
+
+            <div class="dual-grid top-gap">
+              <div class="card">
+                <h4>Input Editor</h4>
+                <div id="richEditor" class="rich-editor" contenteditable="true"></div>
+                <div class="action-row top-gap-sm">
+                  <button class="solid-btn" onclick="convertWordToHtml()">Convert</button>
+                  <button class="ghost-btn" onclick="clearWordHtml()">Clear</button>
+                </div>
+              </div>
+
+              <div class="card">
+                <h4>Output HTML</h4>
+                <textarea id="wordHtmlOutput" readonly placeholder="Hasil HTML akan muncul di sini..."></textarea>
+                <div class="action-row top-gap-sm">
+                  <button class="ghost-btn" onclick="copyWordHtml()">Copy HTML</button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- SCANNER -->
+        <section class="view" id="view-scanner">
+          <div class="panel panel-body">
+            <div class="eyebrow">🛡️ Scanner</div>
+            <h2 class="page-title">Pattern scanner lokal.</h2>
+            <p class="page-subtitle">Scan text/code atau file lokal berdasarkan pattern mencurigakan.</p>
+
+            <div class="dual-grid top-gap">
+              <div class="card">
+                <h4>Input Scan</h4>
+                <div class="form-grid">
+                  <textarea id="scannerInput" placeholder="Paste script/code di sini untuk discan..."></textarea>
+                  <input type="file" id="scannerFile" accept=".php,.phtml,.html,.js,.txt" onchange="loadScannerFile(event)" />
+                  <div class="action-row">
+                    <button class="solid-btn" onclick="runScanner()">Run Scan</button>
+                    <button class="ghost-btn" onclick="clearScanner()">Clear</button>
+                  </div>
+                </div>
+              </div>
+
+              <div class="card">
+                <h4>Scan Result</h4>
+                <div id="scannerSummary" class="empty-state">Belum ada scan dijalankan.</div>
+                <div id="scannerResult" class="scanner-result top-gap-sm"></div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- DOMAIN CHECKER -->
+        <section class="view" id="view-domainchecker">
+          <div class="panel panel-body">
+            <div class="eyebrow">🌐 Domain Checker</div>
+            <h2 class="page-title">Checker kualitas domain.</h2>
+            <p class="page-subtitle">UI siap, tapi metric live tetap butuh API / backend. Jadi jangan harap static frontend bisa jadi Ahrefs kantor pusat.</p>
+
+            <div class="form-grid top-gap">
+              <input type="text" id="domainInput" placeholder="contoh: example.com" />
+              <div class="action-row">
+                <button class="solid-btn" onclick="checkDomainQuality()">Check Domain</button>
+                <button class="ghost-btn" onclick="resetDomainChecker()">Reset</button>
+              </div>
+            </div>
+
+            <div class="counter-box top-gap">
+              <div class="counter-pill">DA<strong id="metricDA">-</strong></div>
+              <div class="counter-pill">PA<strong id="metricPA">-</strong></div>
+              <div class="counter-pill">DR<strong id="metricDR">-</strong></div>
+              <div class="counter-pill">Backlinks<strong id="metricBL">-</strong></div>
+              <div class="counter-pill">Traffic<strong id="metricTF">-</strong></div>
+              <div class="counter-pill">Kominfo<strong id="metricKI">-</strong></div>
+            </div>
+
+            <div id="domainCheckerNote" class="empty-state top-gap">
+              Belum ada domain dicek.
+            </div>
+          </div>
+        </section>
+
+        <!-- MUSIC PLAYER -->
+        <section class="view" id="view-musicplayer">
+          <div class="panel panel-body">
+            <div class="eyebrow">🎵 Music Player</div>
+            <h2 class="page-title">Player audio lokal.</h2>
+            <div class="form-grid top-gap">
+              <input type="file" id="musicInput" accept="audio/*" onchange="loadMusic(event)" />
+              <div class="empty-state" id="musicMeta">Belum ada audio dipilih.</div>
+              <audio id="musicPlayer" controls class="full-width"></audio>
+            </div>
+          </div>
+        </section>
+
+        <!-- TERMINAL -->
+        <section class="view" id="view-terminal">
+          <div class="panel panel-body">
+            <div class="eyebrow">⌨️ System Console</div>
+            <h2 class="page-title">Terminal demo.</h2>
+            <div class="form-grid top-gap">
+              <div class="input-row">
+                <input type="text" id="terminalInput" placeholder="help / status / clear / seo-scan" onkeydown="handleTerminal(event)" />
+                <button class="solid-btn" onclick="runTerminalCommand()">Run</button>
+              </div>
+              <div class="terminal" id="terminalOutput">Xu_SEO terminal initialized...
+Type: help</div>
+            </div>
+          </div>
+        </section>
+
+        <!-- SETTINGS -->
+        <section class="view" id="view-settings">
+          <div class="panel panel-body">
+            <div class="eyebrow">⚙️ Workspace Config</div>
+            <h2 class="page-title">Settings dasar dashboard.</h2>
+            <div class="triple-grid top-gap">
+              <div class="card">
+                <h4>Nama User</h4>
+                <div class="form-grid">
+                  <input type="text" id="settingsUsername" placeholder="Contoh: master" />
+                  <button class="solid-btn" onclick="applyUsername()">Apply</button>
+                </div>
+              </div>
+              <div class="card">
+                <h4>Judul Dashboard</h4>
+                <div class="form-grid">
+                  <input type="text" id="settingsBrand" placeholder="Contoh: 🔥Xu_SEO🔥" />
+                  <button class="solid-btn" onclick="applyBrand()">Apply</button>
+                </div>
+              </div>
+              <div class="card">
+                <h4>Reset Semua</h4>
+                <div class="form-grid">
+                  <button class="ghost-btn" onclick="resetAppData()">Reset Local Data</button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <div class="footer-note">🔥Xu_SEO🔥 • cyberpunk neon tosca • github only workspace</div>
+      </main>
+    </div>
+  </div>
+
+  <script src="assets/app.js"></script>
+</body>
+</html>
