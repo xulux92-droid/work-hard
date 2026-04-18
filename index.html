@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>🔥Xu_SEO🔥 Dashboard</title>
-  <link rel="stylesheet" href="assets/style.css" />
+  <link rel="stylesheet" href="style.css" />
 </head>
 <body>
   <div class="app-shell">
@@ -172,8 +172,8 @@
           <div class="panel panel-body">
             <div class="eyebrow">📁 File Manager</div>
             <h2 class="page-title">File Manager lokal.</h2>
-            <div class="dual-grid top-gap">
-              <div class="card">
+            <div class="wordhtml-layout top-gap">
+              <div class="card editor-card">
                 <h4>Upload File</h4>
                 <div class="form-grid">
                   <input type="file" id="fileInput" multiple onchange="renderFiles()" />
@@ -200,8 +200,8 @@
             <div class="eyebrow">🚀 File Uploader</div>
             <h2 class="page-title">Uploader drag-drop.</h2>
 
-            <div class="dual-grid top-gap">
-              <div class="card">
+            <div class="wordhtml-layout top-gap">
+              <div class="card editor-card">
                 <h4>Drop Zone</h4>
                 <div id="dropzone" class="dropzone">
                   <p>Drop file di sini atau pilih manual</p>
@@ -249,7 +249,7 @@
             <div class="eyebrow">🧮 Calculator</div>
             <h2 class="page-title">Kalkulator cepat.</h2>
             <div class="form-grid top-gap">
-              <input type="text" id="calcDisplay" placeholder="0" readonly />
+              <input type="text" id="calcDisplay" placeholder="0" inputmode="decimal" autocomplete="off" spellcheck="false" />
               <div class="calc-grid">
                 <button class="ghost-btn" onclick="appendCalc('7')">7</button>
                 <button class="ghost-btn" onclick="appendCalc('8')">8</button>
@@ -310,17 +310,17 @@
               </div>
             </div>
 
-            <div class="dual-grid top-gap">
-              <div class="card">
+            <div class="wordhtml-layout top-gap">
+              <div class="card editor-card">
                 <h4>Input Editor</h4>
-                <div id="richEditor" class="rich-editor" contenteditable="true"></div>
+                <div id="richEditor" class="rich-editor" contenteditable="true"><p></p></div>
                 <div class="action-row top-gap-sm">
                   <button class="solid-btn" onclick="convertWordToHtml()">Convert</button>
                   <button class="ghost-btn" onclick="clearWordHtml()">Clear</button>
                 </div>
               </div>
 
-              <div class="card">
+              <div class="card output-card">
                 <h4>Output HTML</h4>
                 <textarea id="wordHtmlOutput" readonly placeholder="Hasil HTML akan muncul di sini..."></textarea>
                 <div class="action-row top-gap-sm">
@@ -338,8 +338,8 @@
             <h2 class="page-title">Pattern scanner lokal.</h2>
             <p class="page-subtitle">Scan text/code atau file lokal berdasarkan pattern mencurigakan.</p>
 
-            <div class="dual-grid top-gap">
-              <div class="card">
+            <div class="wordhtml-layout top-gap">
+              <div class="card editor-card">
                 <h4>Input Scan</h4>
                 <div class="form-grid">
                   <textarea id="scannerInput" placeholder="Paste script/code di sini untuk discan..."></textarea>
@@ -454,6 +454,6 @@ Type: help</div>
     </div>
   </div>
 
-  <script src="assets/app.js"></script>
+  <script src="app.js"></script>
 </body>
 </html>
