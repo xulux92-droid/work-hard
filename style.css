@@ -10,6 +10,8 @@
   --muted: #8bc7bf;
   --dark-text: #02201b;
   --danger: #ff6f91;
+  --warning: #ffd166;
+  --safe: #8fff8a;
   --shadow: 0 0 14px rgba(31, 255, 217, 0.22), 0 0 40px rgba(130, 255, 67, 0.07);
   --radius: 24px;
 }
@@ -53,7 +55,7 @@ body::before {
 }
 
 .app-shell {
-  width: min(1420px, calc(100% - 28px));
+  width: min(1460px, calc(100% - 28px));
   margin: 0 auto;
   padding: 18px 0 36px;
   position: relative;
@@ -184,7 +186,7 @@ body::before {
 
 .main-grid {
   display: grid;
-  grid-template-columns: 270px 1fr;
+  grid-template-columns: 280px 1fr;
   gap: 18px;
 }
 
@@ -304,7 +306,7 @@ body::before {
 }
 
 .counter-box {
-  grid-template-columns: repeat(4, minmax(0, 1fr));
+  grid-template-columns: repeat(6, minmax(0, 1fr));
 }
 
 .calc-grid {
@@ -531,6 +533,10 @@ textarea::placeholder {
   font-size: 14px;
 }
 
+.left-text {
+  text-align: left;
+}
+
 .counter-pill {
   text-align: center;
 }
@@ -595,7 +601,7 @@ textarea::placeholder {
 }
 
 .rich-editor {
-  min-height: 420px;
+  min-height: 460px;
   padding: 16px 18px;
   border-radius: 16px;
   border: 1px solid rgba(125, 255, 238, 0.18);
@@ -618,7 +624,8 @@ textarea::placeholder {
 .rich-editor blockquote,
 .rich-editor ul,
 .rich-editor ol,
-.rich-editor table {
+.rich-editor table,
+.rich-editor hr {
   margin: 0 0 14px;
 }
 
@@ -657,9 +664,111 @@ textarea::placeholder {
 }
 
 #wordHtmlOutput {
-  min-height: 420px;
+  min-height: 320px;
   font-family: Consolas, monospace;
   line-height: 1.6;
+}
+
+.preview-box {
+  min-height: 220px;
+  border-radius: 16px;
+  border: 1px solid rgba(125, 255, 238, 0.18);
+  background: rgba(4, 14, 12, 0.7);
+  padding: 16px;
+  overflow: auto;
+  line-height: 1.7;
+}
+
+.preview-box table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.preview-box td,
+.preview-box th {
+  border: 1px solid rgba(125, 255, 238, 0.2);
+  padding: 8px;
+}
+
+.score-board {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.score-card {
+  padding: 14px;
+  border-radius: 16px;
+  border: 1px solid rgba(125, 255, 238, 0.13);
+  background: rgba(6, 28, 24, 0.84);
+  text-align: center;
+}
+
+.score-card strong {
+  display: block;
+  margin-top: 8px;
+  font-size: 20px;
+  color: var(--primary-2);
+}
+
+.scanner-preview {
+  min-height: 240px;
+  margin: 0;
+  padding: 16px;
+  border-radius: 16px;
+  border: 1px solid rgba(125, 255, 238, 0.18);
+  background: rgba(4, 14, 12, 0.7);
+  color: #cffff8;
+  overflow: auto;
+  white-space: pre-wrap;
+  word-break: break-word;
+  font-family: Consolas, monospace;
+  line-height: 1.6;
+}
+
+.scanner-hit {
+  padding: 12px 14px;
+  border-radius: 14px;
+  border: 1px solid rgba(255, 111, 145, 0.28);
+  background: rgba(55, 12, 20, 0.55);
+  color: #ffd8e1;
+  font-family: Consolas, monospace;
+  font-size: 13px;
+}
+
+.scan-safe {
+  color: var(--safe);
+}
+
+.scan-warning {
+  color: var(--warning);
+}
+
+.scan-danger {
+  color: #ff8d9b;
+}
+
+.mark-hit {
+  background: rgba(255, 111, 145, 0.18);
+  color: #ffd8e1;
+  padding: 1px 3px;
+  border-radius: 4px;
+}
+
+.upload-preview-image {
+  max-width: 100%;
+  border-radius: 14px;
+  display: block;
+  margin: 0 auto;
+}
+
+.upload-preview-file {
+  color: var(--primary-2);
+  font-weight: 700;
+}
+
+.span-2 {
+  grid-column: span 2;
 }
 
 .hidden {
@@ -682,16 +791,6 @@ textarea::placeholder {
   margin-bottom: 8px;
 }
 
-.scanner-hit {
-  padding: 12px 14px;
-  border-radius: 14px;
-  border: 1px solid rgba(255, 111, 145, 0.28);
-  background: rgba(55, 12, 20, 0.55);
-  color: #ffd8e1;
-  font-family: Consolas, monospace;
-  font-size: 13px;
-}
-
 .footer-note {
   margin-top: 20px;
   text-align: center;
@@ -705,7 +804,8 @@ textarea::placeholder {
   .main-grid,
   .hero,
   .dual-grid,
-  .auth-wrap {
+  .auth-wrap,
+  .triple-grid {
     grid-template-columns: 1fr;
   }
 
@@ -713,20 +813,22 @@ textarea::placeholder {
     position: relative;
     top: 0;
   }
+
+  .span-2 {
+    grid-column: span 1;
+  }
 }
 
-@media (max-width: 860px) {
+@media (max-width: 980px) {
   .counter-box,
-  .triple-grid,
-  .stat-grid,
-  .calc-grid {
+  .score-board {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 }
 
 @media (max-width: 620px) {
   .app-shell {
-    width: min(100% - 16px, 1420px);
+    width: min(100% - 16px, 1460px);
   }
 
   .topbar,
@@ -737,9 +839,9 @@ textarea::placeholder {
 
   .tool-grid,
   .counter-box,
-  .triple-grid,
   .stat-grid,
-  .calc-grid {
+  .calc-grid,
+  .score-board {
     grid-template-columns: 1fr;
   }
 
@@ -748,7 +850,8 @@ textarea::placeholder {
   }
 
   .rich-editor,
-  #wordHtmlOutput {
-    min-height: 320px;
+  #wordHtmlOutput,
+  .preview-box {
+    min-height: 280px;
   }
 }
