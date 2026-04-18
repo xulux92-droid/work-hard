@@ -33,7 +33,7 @@
           <button class="nav-btn" data-view-target="notepad" type="button" onclick="showView('notepad')"><span>📒 Notepad</span><span>›</span></button>
           <button class="nav-btn" data-view-target="wordcounter" type="button" onclick="showView('wordcounter')"><span>📝 Word Counter</span><span>›</span></button>
           <button class="nav-btn" data-view-target="filemanager" type="button" onclick="showView('filemanager')"><span>📁 File Manager</span><span>›</span></button>
-          <button class="nav-btn" data-view-target="uploader" type="button" onclick="showView('uploader')"><span>🚀 Uploader PRO</span><span>›</span></button>
+          <button class="nav-btn" data-view-target="uploader" type="button" onclick="showView('uploader')"><span>🚀 Uploader</span><span>›</span></button>
           <button class="nav-btn" data-view-target="calculator" type="button" onclick="showView('calculator')"><span>🧮 Calculator</span><span>›</span></button>
           <button class="nav-btn" data-view-target="wordtohtml" type="button" onclick="showView('wordtohtml')"><span>🔤 Word to HTML PRO</span><span>›</span></button>
           <button class="nav-btn" data-view-target="scanner" type="button" onclick="showView('scanner')"><span>🛡️ Scanner PRO</span><span>›</span></button>
@@ -45,12 +45,12 @@
 
         <div class="sidebar-card">
           <strong>Status Project</strong>
-          <p>Versi PRO lengkap. Word to HTML, scanner, domain checker, uploader, semua naik kelas. Jangan lagi campur file setengah matang, nanti browser ngamuk lagi.</p>
+          <p>Versi PRO stabil. Uploader lokal normal, domain checker format SEO, Word to HTML cleaner, scanner scoring.</p>
         </div>
 
         <div class="sidebar-card">
-          <strong>Catatan</strong>
-          <p>ImgBB upload butuh API key. Tanpa key, uploader tetap bisa preview lokal + generate object URL sementara.</p>
+          <strong>Mode Sekarang</strong>
+          <p>Frontend-only. Domain checker menampilkan preview SEO-style dan shortcut ke tool online, bukan narik data premium dari udara tipis.</p>
         </div>
       </aside>
 
@@ -62,8 +62,8 @@
               <div class="eyebrow">⚡ Build Aktif</div>
               <h2>Dashboard kerja SEO + utility tools versi PRO.</h2>
               <p>
-                Semua fitur inti sekarang lebih serius: editor Word to HTML cleaner, scanner dengan scoring,
-                domain checker analyzer, dan uploader dengan API mode optional.
+                Semua fitur inti sekarang lebih rapih: Word to HTML PRO, Scanner PRO,
+                uploader lokal stabil, dan domain checker format SEO.
               </p>
               <div class="search-row">
                 <input type="text" id="toolSearch" placeholder="Cari tools..." oninput="filterTools()" />
@@ -96,11 +96,11 @@
               <article class="tool-card" data-name="notepad notes memo"><div><div class="tool-icon">📒</div><h4>Notepad</h4><p>Catatan kerja cepat.</p></div><div class="tool-meta"><span class="tag">Notes</span><button class="small-btn" type="button" onclick="showView('notepad')">OPEN</button></div></article>
               <article class="tool-card" data-name="word counter karakter kata"><div><div class="tool-icon">📝</div><h4>Word Counter</h4><p>Hitung kata, karakter, paragraf.</p></div><div class="tool-meta"><span class="tag">SEO</span><button class="small-btn" type="button" onclick="showView('wordcounter')">OPEN</button></div></article>
               <article class="tool-card" data-name="file manager local folder"><div><div class="tool-icon">📁</div><h4>File Manager</h4><p>Lihat file lokal.</p></div><div class="tool-meta"><span class="tag">Files</span><button class="small-btn" type="button" onclick="showView('filemanager')">OPEN</button></div></article>
-              <article class="tool-card" data-name="uploader api imgbb real upload preview"><div><div class="tool-icon">🚀</div><h4>Uploader PRO</h4><p>Preview lokal + ImgBB API optional.</p></div><div class="tool-meta"><span class="tag">Upload</span><button class="small-btn" type="button" onclick="showView('uploader')">OPEN</button></div></article>
+              <article class="tool-card" data-name="uploader normal local preview file"><div><div class="tool-icon">🚀</div><h4>Uploader</h4><p>Preview lokal + output cepat.</p></div><div class="tool-meta"><span class="tag">Upload</span><button class="small-btn" type="button" onclick="showView('uploader')">OPEN</button></div></article>
               <article class="tool-card" data-name="calculator hitung math keyboard"><div><div class="tool-icon">🧮</div><h4>Calculator</h4><p>Kalkulator cepat dengan keyboard.</p></div><div class="tool-meta"><span class="tag">Math</span><button class="small-btn" type="button" onclick="showView('calculator')">OPEN</button></div></article>
-              <article class="tool-card" data-name="word to html pro cleaner heading list table justify output"><div><div class="tool-icon">🔤</div><h4>Word to HTML PRO</h4><p>Cleaner HTML, preview, dan export rapi.</p></div><div class="tool-meta"><span class="tag">HTML</span><button class="small-btn" type="button" onclick="showView('wordtohtml')">OPEN</button></div></article>
+              <article class="tool-card" data-name="word to html pro cleaner heading list table justify output preview"><div><div class="tool-icon">🔤</div><h4>Word to HTML PRO</h4><p>Cleaner HTML, preview, dan export rapi.</p></div><div class="tool-meta"><span class="tag">HTML</span><button class="small-btn" type="button" onclick="showView('wordtohtml')">OPEN</button></div></article>
               <article class="tool-card" data-name="scanner pro malware suspicious pattern score highlight"><div><div class="tool-icon">🛡️</div><h4>Scanner PRO</h4><p>Skor risiko + highlight temuan.</p></div><div class="tool-meta"><span class="tag">Scan</span><button class="small-btn" type="button" onclick="showView('scanner')">OPEN</button></div></article>
-              <article class="tool-card" data-name="domain checker title meta analyzer score brandability"><div><div class="tool-icon">🌐</div><h4>Domain Checker+</h4><p>Analisa format domain + health score.</p></div><div class="tool-meta"><span class="tag">SEO</span><button class="small-btn" type="button" onclick="showView('domainchecker')">OPEN</button></div></article>
+              <article class="tool-card" data-name="domain checker dr da pa usia domain backlink traffic ahrefs whois"><div><div class="tool-icon">🌐</div><h4>Domain Checker+</h4><p>Format SEO style sesuai kebutuhan lo.</p></div><div class="tool-meta"><span class="tag">SEO</span><button class="small-btn" type="button" onclick="showView('domainchecker')">OPEN</button></div></article>
               <article class="tool-card" data-name="music player audio mp3"><div><div class="tool-icon">🎵</div><h4>Music Player</h4><p>Putar audio lokal.</p></div><div class="tool-meta"><span class="tag">Media</span><button class="small-btn" type="button" onclick="showView('musicplayer')">OPEN</button></div></article>
               <article class="tool-card" data-name="terminal shell command"><div><div class="tool-icon">⌨️</div><h4>Terminal</h4><p>Console demo.</p></div><div class="tool-meta"><span class="tag">System</span><button class="small-btn" type="button" onclick="showView('terminal')">OPEN</button></div></article>
             </div>
@@ -158,7 +158,7 @@
             <div class="form-grid top-gap">
               <textarea id="wordCounterInput" placeholder="Tempel teks di sini..." oninput="countWords()"></textarea>
             </div>
-            <div class="counter-box">
+            <div class="counter-box counter-box-4">
               <div class="counter-pill">Kata<strong id="countWords">0</strong></div>
               <div class="counter-pill">Karakter<strong id="countChars">0</strong></div>
               <div class="counter-pill">Paragraf<strong id="countParagraphs">0</strong></div>
@@ -197,43 +197,23 @@
         <!-- UPLOADER -->
         <section class="view" id="view-uploader">
           <div class="panel panel-body">
-            <div class="eyebrow">🚀 Uploader PRO</div>
-            <h2 class="page-title">Uploader drag-drop + API mode.</h2>
+            <div class="eyebrow">🚀 Uploader</div>
+            <h2 class="page-title">Uploader normal untuk kebutuhan lokal/terminal.</h2>
 
-            <div class="triple-grid top-gap">
+            <div class="dual-grid top-gap">
               <div class="card">
-                <h4>Upload Target</h4>
-                <div class="form-grid">
-                  <select id="uploadProvider">
-                    <option value="local">Local Preview Only</option>
-                    <option value="imgbb">ImgBB API</option>
-                  </select>
-                  <input type="password" id="imgbbApiKey" placeholder="ImgBB API key (opsional untuk mode ImgBB)" />
-                  <div class="empty-state left-text">
-                    Mode <b>Local</b> tetap jalan tanpa API key. Untuk upload real, pilih <b>ImgBB</b>.
-                  </div>
-                </div>
-              </div>
-
-              <div class="card span-2">
                 <h4>Drop Zone</h4>
                 <div id="dropzone" class="dropzone">
                   <p>Drop file di sini atau pilih manual</p>
                   <input type="file" id="uploaderInput" class="hidden" onchange="handleUploaderFile(event)" />
                   <div class="action-row top-gap-sm">
                     <button class="solid-btn" type="button" onclick="document.getElementById('uploaderInput').click()">Pilih File</button>
-                    <button class="ghost-btn" type="button" onclick="uploadSelectedFile()">Upload Sekarang</button>
                     <button class="ghost-btn" type="button" onclick="resetUploader()">Reset</button>
                   </div>
                 </div>
-              </div>
-            </div>
 
-            <div class="dual-grid top-gap">
-              <div class="card">
-                <h4>Upload Detail</h4>
-                <div class="form-grid">
-                  <div class="empty-state" id="uploaderMeta">Belum ada file dipilih.</div>
+                <div class="form-grid top-gap-sm">
+                  <div class="empty-state left-text" id="uploaderMeta">Belum ada file dipilih.</div>
                   <div>
                     <div class="section-head tight-gap">
                       <span class="muted">Progress</span>
@@ -248,13 +228,13 @@
               <div class="card">
                 <h4>Generated Output</h4>
                 <div class="form-grid">
-                  <textarea id="uploadUrl" readonly placeholder="Result URL"></textarea>
-                  <textarea id="uploadDirectUrl" readonly placeholder="Direct file URL"></textarea>
+                  <textarea id="uploadUrl" readonly placeholder="Object URL / result"></textarea>
+                  <textarea id="uploadFilename" readonly placeholder="Nama file"></textarea>
                   <textarea id="uploadHtmlEmbed" readonly placeholder="HTML embed"></textarea>
                   <textarea id="uploadMarkdown" readonly placeholder="Markdown embed"></textarea>
                   <div class="action-row">
                     <button class="ghost-btn" type="button" onclick="copyUploaderField('uploadUrl')">Copy URL</button>
-                    <button class="ghost-btn" type="button" onclick="copyUploaderField('uploadDirectUrl')">Copy Direct</button>
+                    <button class="ghost-btn" type="button" onclick="copyUploaderField('uploadFilename')">Copy Name</button>
                     <button class="ghost-btn" type="button" onclick="copyUploaderField('uploadHtmlEmbed')">Copy HTML</button>
                     <button class="ghost-btn" type="button" onclick="copyUploaderField('uploadMarkdown')">Copy MD</button>
                   </div>
@@ -403,29 +383,31 @@
         <section class="view" id="view-domainchecker">
           <div class="panel panel-body">
             <div class="eyebrow">🌐 Domain Checker+</div>
-            <h2 class="page-title">Analyzer kualitas domain.</h2>
-            <p class="page-subtitle">Preview analyzer frontend untuk format domain, brandability, struktur, dan rekomendasi SEO awal.</p>
+            <h2 class="page-title">Format SEO style sesuai kebutuhan lo.</h2>
+            <p class="page-subtitle">Preview internal + shortcut ke Ahrefs/Whois online.</p>
 
             <div class="form-grid top-gap">
               <input type="text" id="domainInput" placeholder="contoh: example.com" />
               <div class="action-row">
                 <button class="solid-btn" type="button" onclick="checkDomainQuality()">Check Domain</button>
+                <button class="ghost-btn" type="button" onclick="openAhrefsDomain()">Open Ahrefs</button>
+                <button class="ghost-btn" type="button" onclick="openWhoisDomain()">Open Whois</button>
                 <button class="ghost-btn" type="button" onclick="resetDomainChecker()">Reset</button>
               </div>
             </div>
 
-            <div class="counter-box top-gap">
-              <div class="counter-pill">Health<strong id="metricDA">-</strong></div>
-              <div class="counter-pill">Brand<strong id="metricPA">-</strong></div>
-              <div class="counter-pill">SEO<strong id="metricDR">-</strong></div>
-              <div class="counter-pill">Length<strong id="metricBL">-</strong></div>
-              <div class="counter-pill">Readability<strong id="metricTF">-</strong></div>
-              <div class="counter-pill">Status<strong id="metricKI">-</strong></div>
+            <div class="counter-box counter-box-6 top-gap">
+              <div class="counter-pill">DR<strong id="metricDR">-</strong></div>
+              <div class="counter-pill">DA<strong id="metricDA">-</strong></div>
+              <div class="counter-pill">PA<strong id="metricPA">-</strong></div>
+              <div class="counter-pill">USIA DOMAIN<strong id="metricAGE">-</strong></div>
+              <div class="counter-pill">BACKLINK CHECK<strong id="metricBL">-</strong></div>
+              <div class="counter-pill">TRAFFIC CHECKER<strong id="metricTF">-</strong></div>
             </div>
 
             <div class="dual-grid top-gap">
               <div id="domainCheckerNote" class="empty-state left-text">Belum ada domain dicek.</div>
-              <div id="domainCheckerTips" class="empty-state left-text">Tips dan rekomendasi akan muncul di sini.</div>
+              <div id="domainCheckerTips" class="empty-state left-text">Tips dan shortcut akan muncul di sini.</div>
             </div>
           </div>
         </section>
