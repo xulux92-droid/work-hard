@@ -15,36 +15,27 @@ const views = [
 ];
 
 const suspiciousPatterns = [
-  "eval",
-  "system",
-  "create_function",
-  "assert",
-  "chdir",
-  "base64_decode",
-  "shell_exec",
-  "exec",
-  "passthru",
-  "popen",
-  "_halt_compiler",
-  "file_get_contents(",
-  "shell(",
-  "base64_encode(",
-  "webconsole",
-  "uploader",
-  "hacked",
-  "move_uploaded_file",
-  "hex2bin(",
-  "bin2hex(",
-  "wso",
-  "alfa",
-  "filemanager",
-  "pastebin",
-  "mini shell",
-  "minishell",
-  "b374k",
-  "indoxploit",
-  "ALFA_DATA/alfacgiapi"
+  { label: "eval()", pattern: /eval\s*\(/gi, score: 18, severity: "danger" },
+  { label: "base64_decode()", pattern: /base64_decode\s*\(/gi, score: 12, severity: "warning" },
+  { label: "shell_exec()", pattern: /shell_exec\s*\(/gi, score: 20, severity: "danger" },
+  { label: "exec()", pattern: /exec\s*\(/gi, score: 16, severity: "danger" },
+  { label: "system()", pattern: /system\s*\(/gi, score: 16, severity: "danger" },
+  { label: "passthru()", pattern: /passthru\s*\(/gi, score: 20, severity: "danger" },
+  { label: "popen()", pattern: /popen\s*\(/gi, score: 15, severity: "danger" },
+  { label: "assert()", pattern: /assert\s*\(/gi, score: 12, severity: "warning" },
+  { label: "create_function()", pattern: /create_function\s*\(/gi, score: 10, severity: "warning" },
+  { label: "move_uploaded_file()", pattern: /move_uploaded_file\s*\(/gi, score: 8, severity: "warning" },
+  { label: "iframe hidden", pattern: /<iframe[\s\S]*?(display\s*:\s*none|visibility\s*:\s*hidden|width\s*=\s*["']?0|height\s*=\s*["']?0)/gi, score: 18, severity: "danger" },
+  { label: "fromCharCode", pattern: /fromCharCode\s*\(/gi, score: 8, severity: "warning" },
+  { label: "hex2bin()", pattern: /hex2bin\s*\(/gi, score: 8, severity: "warning" },
+  { label: "gzinflate()", pattern: /gzinflate\s*\(/gi, score: 10, severity: "warning" },
+  { label: "long base64 blob", pattern: /[A-Za-z0-9+/]{200,}={0,2}/g, score: 22, severity: "danger" },
+  { label: "obfuscated script", pattern: /(document\.write\s*\(|unescape\s*\(|atob\s*\()/gi, score: 12, severity: "warning" },
+  { label: "webshell keyword", pattern: /(wso|alfa|indoxploit|b374k|minishell|webconsole)/gi, score: 25, severity: "danger" }
 ];
+
+let selectedUploadFile = null;
+let savedEditorRange = null;
 
 function showView(viewName) {
   views.forEach(view => {
@@ -232,33 +223,135 @@ function clearFolder() {
 function handleUploaderFile(event) {
   const file = event.target.files[0];
   if (!file) return;
-  fillUploader(file);
+  setSelectedUploaderFile(file);
 }
 
-function fillUploader(file) {
+function setSelectedUploaderFile(file) {
+  selectedUploadFile = file;
+
   const meta = document.getElementById("uploaderMeta");
-  const urlEl = document.getElementById("uploadUrl");
-  const wgetEl = document.getElementById("uploadWget");
-  const curlEl = document.getElementById("uploadCurl");
-  if (!meta || !urlEl || !wgetEl || !curlEl) return;
+  const preview = document.getElementById("uploaderPreview");
 
-  meta.innerHTML =
-    "File: <b>" + escapeHtml(file.name) + "</b> • Size: <b>" + formatBytes(file.size) + "</b>";
+  if (meta) {
+    meta.innerHTML = `File: <b>${escapeHtml(file.name)}</b> • Size: <b>${formatBytes(file.size)}</b> • Type: <b>${escapeHtml(file.type || "unknown")}</b>`;
+  }
 
-  animateUploadBar();
+  if (preview) {
+    if (file.type.startsWith("image/")) {
+      const url = URL.createObjectURL(file);
+      preview.innerHTML = `<img class="upload-preview-image" src="${url}" alt="preview" />`;
+    } else {
+      preview.innerHTML = `<div class="upload-preview-file">File siap diupload: ${escapeHtml(file.name)}</div>`;
+    }
+  }
 
-  const safeName = file.name.replace(/\s+/g, "-");
-  const fakeUrl = "https://github.local/upload/" + Date.now() + "-" + safeName;
-
-  urlEl.value = fakeUrl;
-  wgetEl.value = 'wget "' + fakeUrl + '" -O "' + safeName + '"';
-  curlEl.value = 'curl -L "' + fakeUrl + '" -o "' + safeName + '"';
+  fillLocalUploadOutput(file);
 }
 
-function animateUploadBar() {
+function fillLocalUploadOutput(file) {
+  const objectUrl = URL.createObjectURL(file);
+  const uploadUrl = document.getElementById("uploadUrl");
+  const uploadDirectUrl = document.getElementById("uploadDirectUrl");
+  const uploadHtmlEmbed = document.getElementById("uploadHtmlEmbed");
+  const uploadMarkdown = document.getElementById("uploadMarkdown");
+
+  if (uploadUrl) uploadUrl.value = objectUrl;
+  if (uploadDirectUrl) uploadDirectUrl.value = objectUrl;
+
+  if (file.type.startsWith("image/")) {
+    if (uploadHtmlEmbed) uploadHtmlEmbed.value = `<img src="${objectUrl}" alt="${escapeHtml(file.name)}" />`;
+    if (uploadMarkdown) uploadMarkdown.value = `![${file.name}](${objectUrl})`;
+  } else {
+    if (uploadHtmlEmbed) uploadHtmlEmbed.value = `<a href="${objectUrl}" download="${escapeHtml(file.name)}">${escapeHtml(file.name)}</a>`;
+    if (uploadMarkdown) uploadMarkdown.value = `[${file.name}](${objectUrl})`;
+  }
+}
+
+async function uploadSelectedFile() {
+  if (!selectedUploadFile) {
+    alert("Pilih file dulu.");
+    return;
+  }
+
+  const provider = document.getElementById("uploadProvider")?.value || "local";
+
+  if (provider === "local") {
+    animateUploadBar(true);
+    alert("Mode Local Preview aktif. File tidak dikirim ke server, tapi output lokal sudah dibuat.");
+    return;
+  }
+
+  if (provider === "imgbb") {
+    await uploadToImgBB(selectedUploadFile);
+  }
+}
+
+async function uploadToImgBB(file) {
+  const key = document.getElementById("imgbbApiKey")?.value.trim();
+  if (!key) {
+    alert("Isi ImgBB API key dulu.");
+    return;
+  }
+
+  try {
+    animateUploadBar(false, 15);
+
+    const formData = new FormData();
+    formData.append("image", file);
+
+    const response = await fetch(`https://api.imgbb.com/1/upload?key=${encodeURIComponent(key)}`, {
+      method: "POST",
+      body: formData
+    });
+
+    animateUploadBar(false, 70);
+
+    const data = await response.json();
+
+    if (!response.ok || !data?.success) {
+      throw new Error(data?.error?.message || "Upload gagal.");
+    }
+
+    const result = data.data;
+    const url = result.url || "";
+    const display = result.display_url || url;
+    const direct = result.image?.url || url;
+
+    const uploadUrl = document.getElementById("uploadUrl");
+    const uploadDirectUrl = document.getElementById("uploadDirectUrl");
+    const uploadHtmlEmbed = document.getElementById("uploadHtmlEmbed");
+    const uploadMarkdown = document.getElementById("uploadMarkdown");
+
+    if (uploadUrl) uploadUrl.value = display;
+    if (uploadDirectUrl) uploadDirectUrl.value = direct;
+    if (uploadHtmlEmbed) uploadHtmlEmbed.value = `<img src="${direct}" alt="${escapeHtml(file.name)}" />`;
+    if (uploadMarkdown) uploadMarkdown.value = `![${file.name}](${direct})`;
+
+    animateUploadBar(false, 100);
+    alert("Upload ImgBB berhasil.");
+  } catch (error) {
+    animateUploadBar(false, 0);
+    alert("Upload ImgBB gagal: " + error.message);
+  }
+}
+
+function animateUploadBar(forceDone = false, setValue = null) {
   const bar = document.getElementById("uploadBar");
   const percent = document.getElementById("uploadPercent");
   if (!bar || !percent) return;
+
+  if (forceDone) {
+    bar.style.width = "100%";
+    percent.textContent = "100%";
+    return;
+  }
+
+  if (typeof setValue === "number") {
+    const clamped = Math.max(0, Math.min(100, setValue));
+    bar.style.width = clamped + "%";
+    percent.textContent = clamped + "%";
+    return;
+  }
 
   let value = 0;
   bar.style.width = "0%";
@@ -280,21 +373,27 @@ function copyUploaderField(id) {
 }
 
 function resetUploader() {
+  selectedUploadFile = null;
+
   const uploaderInput = document.getElementById("uploaderInput");
   const uploaderMeta = document.getElementById("uploaderMeta");
   const uploadUrl = document.getElementById("uploadUrl");
-  const uploadWget = document.getElementById("uploadWget");
-  const uploadCurl = document.getElementById("uploadCurl");
+  const uploadDirectUrl = document.getElementById("uploadDirectUrl");
+  const uploadHtmlEmbed = document.getElementById("uploadHtmlEmbed");
+  const uploadMarkdown = document.getElementById("uploadMarkdown");
   const uploadBar = document.getElementById("uploadBar");
   const uploadPercent = document.getElementById("uploadPercent");
+  const uploaderPreview = document.getElementById("uploaderPreview");
 
   if (uploaderInput) uploaderInput.value = "";
   if (uploaderMeta) uploaderMeta.textContent = "Belum ada file dipilih.";
   if (uploadUrl) uploadUrl.value = "";
-  if (uploadWget) uploadWget.value = "";
-  if (uploadCurl) uploadCurl.value = "";
+  if (uploadDirectUrl) uploadDirectUrl.value = "";
+  if (uploadHtmlEmbed) uploadHtmlEmbed.value = "";
+  if (uploadMarkdown) uploadMarkdown.value = "";
   if (uploadBar) uploadBar.style.width = "0%";
   if (uploadPercent) uploadPercent.textContent = "0%";
+  if (uploaderPreview) uploaderPreview.textContent = "Preview akan muncul di sini.";
 }
 
 function setupDropzone() {
@@ -319,7 +418,7 @@ function setupDropzone() {
 
   dropzone.addEventListener("drop", e => {
     const file = e.dataTransfer.files[0];
-    if (file) fillUploader(file);
+    if (file) setSelectedUploaderFile(file);
   });
 }
 
@@ -372,8 +471,6 @@ function setupCalculatorKeyboard() {
   const display = document.getElementById("calcDisplay");
   if (!display) return;
 
-  display.removeAttribute("readonly");
-
   display.addEventListener("input", () => {
     display.value = sanitizeCalcValue(display.value);
   });
@@ -392,8 +489,6 @@ function setupCalculatorKeyboard() {
     }
   });
 }
-
-let savedEditorRange = null;
 
 function getEditor() {
   return document.getElementById("richEditor");
@@ -453,6 +548,10 @@ function insertEditorLink() {
   editorCommand("createLink", safeUrl);
 }
 
+function insertHorizontalRule() {
+  editorCommand("insertHorizontalRule");
+}
+
 function insertTablePrompt() {
   const rows = parseInt(prompt("Jumlah baris?", "2"), 10);
   const cols = parseInt(prompt("Jumlah kolom?", "2"), 10);
@@ -501,6 +600,85 @@ function normalizeEditorContent() {
       if (!cell.innerHTML.trim()) cell.innerHTML = "<br>";
     });
   });
+
+  updateWordHtmlPreview();
+}
+
+function stripMsOfficeJunk(html) {
+  return html
+    .replace(/<!--[\s\S]*?-->/g, "")
+    .replace(/<\/?o:p[^>]*>/gi, "")
+    .replace(/<\/?(meta|link|xml|style|script)[^>]*>/gi, "")
+    .replace(/\s*mso-[^:"']+:[^;"']+;?/gi, "")
+    .replace(/\s*class=("|\')[^"\']*(Mso|WordSection)[^"\']*("|\')/gi, "");
+}
+
+function removeUnsafeAttributes(html) {
+  return html
+    .replace(/\sstyle=(".*?"|'.*?')/gi, "")
+    .replace(/\sclass=(".*?"|'.*?')/gi, "")
+    .replace(/\slang=(".*?"|'.*?')/gi, "")
+    .replace(/\swidth=(".*?"|'.*?')/gi, "")
+    .replace(/\sheight=(".*?"|'.*?')/gi, "")
+    .replace(/\salign=(".*?"|'.*?')/gi, "")
+    .replace(/\sdata-[a-z0-9_-]+=(".*?"|'.*?')/gi, "")
+    .replace(/\sid=(".*?"|'.*?')/gi, "");
+}
+
+function normalizeSemanticTags(html) {
+  return html
+    .replace(/<b(\s[^>]*)?>/gi, "<strong>")
+    .replace(/<\/b>/gi, "</strong>")
+    .replace(/<i(\s[^>]*)?>/gi, "<em>")
+    .replace(/<\/i>/gi, "</em>");
+}
+
+function unwrapGarbageSpans(html) {
+  let previous = "";
+  let current = html;
+
+  while (previous !== current) {
+    previous = current;
+    current = current.replace(/<span[^>]*>([\s\S]*?)<\/span>/gi, "$1");
+  }
+
+  return current;
+}
+
+function convertLooseDivsToParagraphs(html) {
+  return html
+    .replace(/<div[^>]*>/gi, "<p>")
+    .replace(/<\/div>/gi, "</p>");
+}
+
+function removeEmptyNodes(html) {
+  return html
+    .replace(/<p>\s*(<br\s*\/?>|\&nbsp;|\s)*<\/p>/gi, "")
+    .replace(/<strong>\s*<\/strong>/gi, "")
+    .replace(/<em>\s*<\/em>/gi, "")
+    .replace(/<h1>\s*<\/h1>/gi, "")
+    .replace(/<h2>\s*<\/h2>/gi, "")
+    .replace(/<h3>\s*<\/h3>/gi, "")
+    .replace(/<blockquote>\s*<\/blockquote>/gi, "")
+    .replace(/\n{3,}/g, "\n\n");
+}
+
+function cleanWordHtml() {
+  const editor = getEditor();
+  if (!editor) return;
+
+  let html = editor.innerHTML || "";
+  html = stripMsOfficeJunk(html);
+  html = removeUnsafeAttributes(html);
+  html = normalizeSemanticTags(html);
+  html = unwrapGarbageSpans(html);
+  html = convertLooseDivsToParagraphs(html);
+  html = removeEmptyNodes(html);
+
+  editor.innerHTML = html.trim() || "<p><br></p>";
+  normalizeEditorContent();
+  saveEditorSelection();
+  alert("HTML berhasil dibersihkan.");
 }
 
 function formatHtmlOutput(html) {
@@ -510,6 +688,14 @@ function formatHtmlOutput(html) {
     .trim();
 }
 
+function updateWordHtmlPreview() {
+  const editor = getEditor();
+  const preview = document.getElementById("wordHtmlPreview");
+  if (!editor || !preview) return;
+
+  preview.innerHTML = editor.innerHTML.trim() || "Preview HTML akan muncul di sini.";
+}
+
 function convertWordToHtml() {
   const editor = getEditor();
   const output = document.getElementById("wordHtmlOutput");
@@ -517,13 +703,16 @@ function convertWordToHtml() {
 
   normalizeEditorContent();
   output.value = formatHtmlOutput(editor.innerHTML);
+  updateWordHtmlPreview();
 }
 
 function clearWordHtml() {
   const editor = getEditor();
   const output = document.getElementById("wordHtmlOutput");
+  const preview = document.getElementById("wordHtmlPreview");
   if (editor) editor.innerHTML = "<p><br></p>";
   if (output) output.value = "";
+  if (preview) preview.textContent = "Preview HTML akan muncul di sini.";
 }
 
 function copyWordHtml() {
@@ -531,6 +720,29 @@ function copyWordHtml() {
   if (!output || !output.value) return alert("Belum ada HTML untuk dicopy.");
   navigator.clipboard.writeText(output.value);
   alert("HTML berhasil dicopy.");
+}
+
+function copyEditorPlainText() {
+  const editor = getEditor();
+  if (!editor) return;
+  navigator.clipboard.writeText(editor.innerText || "");
+  alert("Plain text berhasil dicopy.");
+}
+
+function downloadWordHtml() {
+  const output = document.getElementById("wordHtmlOutput");
+  if (!output || !output.value) {
+    alert("Belum ada HTML untuk didownload.");
+    return;
+  }
+
+  const blob = new Blob([output.value], { type: "text/html;charset=utf-8" });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = "word-to-html-output.html";
+  a.click();
+  URL.revokeObjectURL(url);
 }
 
 function setupWordToHtmlEditor() {
@@ -545,7 +757,13 @@ function setupWordToHtmlEditor() {
     setTimeout(() => {
       normalizeEditorContent();
       saveEditorSelection();
+      convertWordToHtml();
     }, 0);
+  });
+
+  editor.addEventListener("input", () => {
+    normalizeEditorContent();
+    convertWordToHtml();
   });
 
   editor.addEventListener("keydown", event => {
@@ -556,6 +774,7 @@ function setupWordToHtmlEditor() {
   });
 
   normalizeEditorContent();
+  convertWordToHtml();
 }
 
 function loadScannerFile(event) {
@@ -570,31 +789,80 @@ function loadScannerFile(event) {
   reader.readAsText(file);
 }
 
+function getScannerVerdict(score) {
+  if (score >= 45) return { label: "DANGEROUS", className: "scan-danger" };
+  if (score >= 20) return { label: "WARNING", className: "scan-warning" };
+  return { label: "SAFE-ish", className: "scan-safe" };
+}
+
+function buildScannerPreview(text, foundLabels) {
+  let preview = escapeHtml(text);
+  foundLabels.forEach(label => {
+    const safe = escapeRegExp(label);
+    preview = preview.replace(new RegExp(safe, "gi"), match => `<span class="mark-hit">${match}</span>`);
+  });
+  return preview;
+}
+
 function runScanner() {
   const inputEl = document.getElementById("scannerInput");
   const result = document.getElementById("scannerResult");
   const summary = document.getElementById("scannerSummary");
-  if (!inputEl || !result || !summary) return;
+  const preview = document.getElementById("scannerPreview");
+  const scoreBoard = document.getElementById("scannerScoreBoard");
+  if (!inputEl || !result || !summary || !preview || !scoreBoard) return;
 
   const input = inputEl.value;
   result.innerHTML = "";
+  scoreBoard.innerHTML = "";
 
   if (!input.trim()) {
     summary.textContent = "Belum ada input untuk discan.";
+    preview.textContent = "Belum ada preview hasil scan.";
     return;
   }
 
-  const found = suspiciousPatterns.filter(pattern =>
-    input.toLowerCase().includes(pattern.toLowerCase())
-  );
+  const findings = [];
+  let totalScore = 0;
 
-  if (!found.length) {
-    summary.innerHTML = "<b>SAFE-ish</b><br>Tidak ada pattern mencurigakan yang cocok.";
+  suspiciousPatterns.forEach(item => {
+    const matches = input.match(item.pattern);
+    if (matches && matches.length) {
+      findings.push({
+        label: item.label,
+        count: matches.length,
+        severity: item.severity,
+        score: item.score * matches.length
+      });
+      totalScore += item.score * matches.length;
+    }
+  });
+
+  const verdict = getScannerVerdict(totalScore);
+
+  summary.innerHTML = `<b class="${verdict.className}">${verdict.label}</b><br>Total risk score: <b>${totalScore}</b>`;
+
+  scoreBoard.innerHTML = `
+    <div class="score-card">Patterns<strong>${findings.length}</strong></div>
+    <div class="score-card">Risk Score<strong>${totalScore}</strong></div>
+    <div class="score-card">Length<strong>${input.length}</strong></div>
+    <div class="score-card">Status<strong class="${verdict.className}">${verdict.label}</strong></div>
+  `;
+
+  if (!findings.length) {
+    result.innerHTML = `<div class="scanner-hit scan-safe">Tidak ada pattern mencurigakan yang cocok.</div>`;
+    preview.innerHTML = escapeHtml(input);
     return;
   }
 
-  summary.innerHTML = "<b>WARNING</b><br>Ditemukan " + found.length + " pattern mencurigakan.";
-  result.innerHTML = found.map(item => `<div class="scanner-hit">${escapeHtml(item)}</div>`).join("");
+  result.innerHTML = findings.map(item => `
+    <div class="scanner-hit ${item.severity === "danger" ? "scan-danger" : "scan-warning"}">
+      <b>${escapeHtml(item.label)}</b><br>
+      Ditemukan: ${item.count}x • Score: ${item.score}
+    </div>
+  `).join("");
+
+  preview.innerHTML = buildScannerPreview(input, findings.map(f => f.label));
 }
 
 function clearScanner() {
@@ -602,17 +870,15 @@ function clearScanner() {
   const file = document.getElementById("scannerFile");
   const summary = document.getElementById("scannerSummary");
   const result = document.getElementById("scannerResult");
+  const preview = document.getElementById("scannerPreview");
+  const scoreBoard = document.getElementById("scannerScoreBoard");
 
   if (input) input.value = "";
   if (file) file.value = "";
   if (summary) summary.textContent = "Belum ada scan dijalankan.";
   if (result) result.innerHTML = "";
-}
-
-function domainScore(domain, seed) {
-  let total = seed;
-  for (const char of domain) total += char.charCodeAt(0);
-  return (total % 71) + 20;
+  if (preview) preview.textContent = "Belum ada preview hasil scan.";
+  if (scoreBoard) scoreBoard.innerHTML = "";
 }
 
 function normalizeDomainInput(value) {
@@ -624,10 +890,30 @@ function normalizeDomainInput(value) {
     .replace(/\/.*$/, "");
 }
 
+function calculateDomainScore(domain) {
+  const core = domain.split(".")[0] || "";
+  const tld = domain.split(".").pop() || "";
+  const length = core.length;
+  const hasHyphen = domain.includes("-");
+  const hasDigits = /\d/.test(domain);
+  const shortBonus = length <= 10 ? 18 : length <= 15 ? 10 : 2;
+  const hyphenPenalty = hasHyphen ? 12 : 0;
+  const digitPenalty = hasDigits ? 10 : 0;
+  const commonTldBonus = ["com", "net", "org", "id", "co", "io"].includes(tld) ? 10 : 4;
+
+  const health = Math.max(20, Math.min(100, 70 + shortBonus + commonTldBonus - hyphenPenalty - digitPenalty));
+  const brand = Math.max(20, Math.min(100, 72 + shortBonus - hyphenPenalty - digitPenalty));
+  const seo = Math.max(20, Math.min(100, 68 + commonTldBonus - hyphenPenalty - digitPenalty));
+  const readability = Math.max(20, Math.min(100, 80 - Math.max(0, length - 8) * 3 - hyphenPenalty - digitPenalty));
+
+  return { health, brand, seo, readability, length };
+}
+
 function checkDomainQuality() {
   const domainInput = document.getElementById("domainInput");
   const note = document.getElementById("domainCheckerNote");
-  if (!domainInput || !note) return;
+  const tips = document.getElementById("domainCheckerTips");
+  if (!domainInput || !note || !tips) return;
 
   const rawDomain = domainInput.value;
   const domain = normalizeDomainInput(rawDomain);
@@ -640,21 +926,16 @@ function checkDomainQuality() {
   const looksValid = /^(?!-)(?:[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?\.)+[a-z]{2,}$/i.test(domain);
   if (!looksValid) {
     note.innerHTML = "<b>Format domain tidak valid.</b><br>Contoh benar: example.com";
+    tips.textContent = "Gunakan format domain bersih tanpa path panjang.";
     resetDomainMetricsOnly();
     return;
   }
 
   const parts = domain.split(".");
   const tld = parts[parts.length - 1];
-  const domainLength = domain.replace(/\./g, "").length;
-  const hasHyphen = domain.includes("-");
-
-  const da = domainScore(domain, 17);
-  const pa = domainScore(domain, 29);
-  const dr = domainScore(domain, 41);
-  const backlinks = (domain.length * 137 + tld.length * 811).toLocaleString("id-ID");
-  const traffic = (domainLength * 321 + (hasHyphen ? 700 : 2300)).toLocaleString("id-ID");
-  const kominfo = ["com", "net", "org", "id", "co", "io", "xyz"].includes(tld) ? "Aman*" : "Manual";
+  const core = parts.slice(0, -1).join(".");
+  const score = calculateDomainScore(domain);
+  const status = score.health >= 80 ? "Strong" : score.health >= 60 ? "Good" : "Weak";
 
   const metricDA = document.getElementById("metricDA");
   const metricPA = document.getElementById("metricPA");
@@ -663,18 +944,37 @@ function checkDomainQuality() {
   const metricTF = document.getElementById("metricTF");
   const metricKI = document.getElementById("metricKI");
 
-  if (metricDA) metricDA.textContent = da;
-  if (metricPA) metricPA.textContent = pa;
-  if (metricDR) metricDR.textContent = dr;
-  if (metricBL) metricBL.textContent = backlinks;
-  if (metricTF) metricTF.textContent = traffic;
-  if (metricKI) metricKI.textContent = kominfo;
+  if (metricDA) metricDA.textContent = score.health;
+  if (metricPA) metricPA.textContent = score.brand;
+  if (metricDR) metricDR.textContent = score.seo;
+  if (metricBL) metricBL.textContent = score.length;
+  if (metricTF) metricTF.textContent = score.readability;
+  if (metricKI) metricKI.textContent = status;
 
-  note.innerHTML =
-    `<b>Domain:</b> ${escapeHtml(domain)}` +
-    `<br><b>Status:</b> Format valid dan siap dianalisis.` +
-    `<br><b>TLD:</b> .${escapeHtml(tld)} | <b>Panjang:</b> ${domainLength} karakter | <b>HTTPS:</b> direkomendasikan` +
-    `<br><b>Catatan:</b> Angka di atas adalah estimasi frontend untuk preview UI GitHub Pages. Kalau nanti mau real DA/PA/DR/backlinks/traffic/Kominfo, tinggal sambung API/backend.`;
+  const recommendations = [];
+  if (score.length > 14) recommendations.push("Nama domain cukup panjang. Coba lebih ringkas.");
+  if (domain.includes("-")) recommendations.push("Hindari tanda minus kalau mau brandability lebih kuat.");
+  if (/\d/.test(domain)) recommendations.push("Angka di domain bisa menurunkan kesan brand profesional.");
+  if (!["com", "net", "org", "id", "co", "io"].includes(tld)) recommendations.push("TLD ini kurang umum. Gunakan .com / .id / .io kalau ingin lebih familiar.");
+  if (!recommendations.length) recommendations.push("Struktur domain sudah cukup bagus untuk branding awal.");
+
+  note.innerHTML = `
+    <b>Domain:</b> ${escapeHtml(domain)}<br>
+    <b>Core Name:</b> ${escapeHtml(core)}<br>
+    <b>TLD:</b> .${escapeHtml(tld)}<br>
+    <b>Status:</b> ${status}<br>
+    <b>Analisa:</b> Ini preview analyzer frontend, jadi fokus ke kualitas nama domain, bukan authority live dari tool pihak ketiga.
+  `;
+
+  tips.innerHTML = `
+    <b>Rekomendasi:</b><br>
+    ${recommendations.map(item => `• ${escapeHtml(item)}`).join("<br>")}<br><br>
+    <b>Checklist SEO awal:</b><br>
+    • gunakan HTTPS<br>
+    • pastikan title & meta description unik<br>
+    • buat sitemap dan robots.txt<br>
+    • cek indexability setelah domain live
+  `;
 }
 
 function resetDomainMetricsOnly() {
@@ -696,9 +996,11 @@ function resetDomainMetricsOnly() {
 function resetDomainChecker() {
   const input = document.getElementById("domainInput");
   const note = document.getElementById("domainCheckerNote");
+  const tips = document.getElementById("domainCheckerTips");
   if (input) input.value = "";
   resetDomainMetricsOnly();
   if (note) note.textContent = "Belum ada domain dicek.";
+  if (tips) tips.textContent = "Tips dan rekomendasi akan muncul di sini.";
 }
 
 function loadMusic(event) {
@@ -736,13 +1038,15 @@ function runTerminalCommand() {
   let response = "";
 
   if (cmd === "help") {
-    response = "Available commands: help, status, clear, seo-scan, whoami";
+    response = "Available commands: help, status, clear, seo-scan, whoami, pro";
   } else if (cmd === "status") {
-    response = "System online | theme neon tosca | build v3 | storage local mode";
+    response = "System online | theme neon tosca | build pro | storage local mode";
   } else if (cmd === "seo-scan") {
-    response = "Scanner module ready. Use the Scanner tab.";
+    response = "Scanner PRO ready. Use the Scanner tab.";
   } else if (cmd === "whoami") {
     response = "Current user: " + (localStorage.getItem("xuUser") || "Guest");
+  } else if (cmd === "pro") {
+    response = "Word to HTML PRO, Scanner PRO, Domain Checker+, Uploader PRO active.";
   } else if (cmd === "clear") {
     output.textContent = "Xu_SEO terminal initialized...\nType: help";
     input.value = "";
@@ -810,6 +1114,10 @@ function escapeHtml(value) {
     .replace(/>/g, "&gt;")
     .replace(/"/g, "&quot;")
     .replace(/'/g, "&#39;");
+}
+
+function escapeRegExp(value) {
+  return String(value).replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
 }
 
 window.onload = function () {
