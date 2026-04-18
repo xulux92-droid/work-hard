@@ -37,6 +37,7 @@ const suspiciousPatterns = [
 let selectedUploadFile = null;
 let savedEditorRange = null;
 let lastUploadObjectUrl = "";
+let lastPreviewObjectUrl = "";
 
 function showView(viewName) {
   views.forEach(view => {
@@ -157,15 +158,10 @@ function countWords() {
   const paragraphs = trimmed ? text.split(/\n\s*\n|\n/).filter(p => p.trim()).length : 0;
   const readSeconds = Math.ceil(words / 3.3) || 0;
 
-  const wordsEl = document.getElementById("countWords");
-  const charsEl = document.getElementById("countChars");
-  const paragraphsEl = document.getElementById("countParagraphs");
-  const readEl = document.getElementById("countRead");
-
-  if (wordsEl) wordsEl.textContent = words;
-  if (charsEl) charsEl.textContent = chars;
-  if (paragraphsEl) paragraphsEl.textContent = paragraphs;
-  if (readEl) readEl.textContent = readSeconds + " dtk";
+  setText("countWords", words);
+  setText("countChars", chars);
+  setText("countParagraphs", paragraphs);
+  setText("countRead", readSeconds + " dtk");
 }
 
 function renderFiles() {
@@ -232,19 +228,22 @@ function setSelectedUploaderFile(file) {
 
   const meta = document.getElementById("uploaderMeta");
   const preview = document.getElementById("uploaderPreview");
-  const uploadBar = document.getElementById("uploadBar");
-  const uploadPercent = document.getElementById("uploadPercent");
 
   if (meta) {
     meta.innerHTML = `File: <b>${escapeHtml(file.name)}</b> • Size: <b>${formatBytes(file.size)}</b> • Type: <b>${escapeHtml(file.type || "unknown")}</b>`;
   }
 
-  if (uploadBar) uploadBar.style.width = "100%";
-  if (uploadPercent) uploadPercent.textContent = "100%";
+  setUploadProgress(100);
 
   if (preview) {
+    if (lastPreviewObjectUrl) {
+      try { URL.revokeObjectURL(lastPreviewObjectUrl); } catch (e) {}
+      lastPreviewObjectUrl = "";
+    }
+
     if (file.type.startsWith("image/")) {
       const previewUrl = URL.createObjectURL(file);
+      lastPreviewObjectUrl = previewUrl;
       preview.innerHTML = `<img class="upload-preview-image" src="${previewUrl}" alt="preview" />`;
     } else {
       preview.innerHTML = `<div class="upload-preview-file">File siap dipakai: ${escapeHtml(file.name)}</div>`;
@@ -256,9 +255,7 @@ function setSelectedUploaderFile(file) {
 
 function fillLocalUploadOutput(file) {
   if (lastUploadObjectUrl) {
-    try {
-      URL.revokeObjectURL(lastUploadObjectUrl);
-    } catch (e) {}
+    try { URL.revokeObjectURL(lastUploadObjectUrl); } catch (e) {}
   }
 
   const objectUrl = URL.createObjectURL(file);
@@ -292,10 +289,13 @@ function resetUploader() {
   selectedUploadFile = null;
 
   if (lastUploadObjectUrl) {
-    try {
-      URL.revokeObjectURL(lastUploadObjectUrl);
-    } catch (e) {}
+    try { URL.revokeObjectURL(lastUploadObjectUrl); } catch (e) {}
     lastUploadObjectUrl = "";
+  }
+
+  if (lastPreviewObjectUrl) {
+    try { URL.revokeObjectURL(lastPreviewObjectUrl); } catch (e) {}
+    lastPreviewObjectUrl = "";
   }
 
   const uploaderInput = document.getElementById("uploaderInput");
@@ -304,8 +304,6 @@ function resetUploader() {
   const uploadFilename = document.getElementById("uploadFilename");
   const uploadHtmlEmbed = document.getElementById("uploadHtmlEmbed");
   const uploadMarkdown = document.getElementById("uploadMarkdown");
-  const uploadBar = document.getElementById("uploadBar");
-  const uploadPercent = document.getElementById("uploadPercent");
   const uploaderPreview = document.getElementById("uploaderPreview");
 
   if (uploaderInput) uploaderInput.value = "";
@@ -314,9 +312,16 @@ function resetUploader() {
   if (uploadFilename) uploadFilename.value = "";
   if (uploadHtmlEmbed) uploadHtmlEmbed.value = "";
   if (uploadMarkdown) uploadMarkdown.value = "";
-  if (uploadBar) uploadBar.style.width = "0%";
-  if (uploadPercent) uploadPercent.textContent = "0%";
   if (uploaderPreview) uploaderPreview.textContent = "Preview akan muncul di sini.";
+
+  setUploadProgress(0);
+}
+
+function setUploadProgress(value) {
+  const uploadBar = document.getElementById("uploadBar");
+  const uploadPercent = document.getElementById("uploadPercent");
+  if (uploadBar) uploadBar.style.width = `${value}%`;
+  if (uploadPercent) uploadPercent.textContent = `${value}%`;
 }
 
 function setupDropzone() {
@@ -408,7 +413,6 @@ function setupCalculatorKeyboard() {
     if (event.key === "Escape") {
       event.preventDefault();
       clearCalc();
-      return;
     }
   });
 }
@@ -805,6 +809,7 @@ function clearScanner() {
   if (scoreBoard) scoreBoard.innerHTML = "";
 }
 
+/* DOMAIN CHECKER NORMAL */
 function normalizeDomainInput(value) {
   return String(value)
     .trim()
@@ -814,28 +819,11 @@ function normalizeDomainInput(value) {
     .replace(/\/.*$/, "");
 }
 
-function calculateDomainPreviewMetrics(domain) {
-  const core = domain.split(".")[0] || "";
-  const length = core.length;
-  const hasHyphen = domain.includes("-");
-  const hasDigits = /\d/.test(domain);
-  const tld = domain.split(".").pop() || "";
-
-  const dr = Math.max(10, Math.min(95, 70 - (length > 12 ? 12 : length > 8 ? 6 : 0) - (hasHyphen ? 8 : 0) - (hasDigits ? 6 : 0) + (["com", "net", "org", "id", "co", "io"].includes(tld) ? 8 : 0)));
-  const da = Math.max(10, Math.min(95, dr - 3 + (core.length <= 8 ? 4 : 0)));
-  const pa = Math.max(10, Math.min(95, da - 2 + (core.length <= 10 ? 3 : 0)));
-
-  const age = core.length <= 6 ? "5+ Tahun*" : core.length <= 10 ? "2-4 Tahun*" : "Baru / Unknown*";
-  const backlinks = dr >= 70 ? "Tinggi*" : dr >= 50 ? "Sedang*" : "Rendah*";
-  const traffic = da >= 70 ? "Potensial Tinggi*" : da >= 50 ? "Potensial Sedang*" : "Potensial Rendah*";
-
-  return { dr, da, pa, age, backlinks, traffic };
-}
-
 function checkDomainQuality() {
   const domainInput = document.getElementById("domainInput");
   const note = document.getElementById("domainCheckerNote");
   const tips = document.getElementById("domainCheckerTips");
+
   if (!domainInput || !note || !tips) return;
 
   const rawDomain = domainInput.value;
@@ -847,74 +835,64 @@ function checkDomainQuality() {
   }
 
   const looksValid = /^(?!-)(?:[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?\.)+[a-z]{2,}$/i.test(domain);
+
   if (!looksValid) {
     note.innerHTML = "<b>Format domain tidak valid.</b><br>Contoh benar: example.com";
-    tips.textContent = "Gunakan format domain bersih tanpa path panjang.";
+    tips.textContent = "Gunakan format domain bersih tanpa path tambahan.";
     resetDomainMetricsOnly();
     return;
   }
 
-  const metrics = calculateDomainPreviewMetrics(domain);
-
-  setText("metricDR", metrics.dr);
-  setText("metricDA", metrics.da);
-  setText("metricPA", metrics.pa);
-  setText("metricAGE", metrics.age);
-  setText("metricBL", metrics.backlinks);
-  setText("metricTF", metrics.traffic);
+  setText("metricDR", "CHECK");
+  setText("metricDA", "CHECK");
+  setText("metricPA", "CHECK");
+  setText("metricBL", "CHECK");
+  setText("metricTF", "CHECK");
+  setText("metricNW", "MANUAL");
 
   note.innerHTML = `
     <b>Domain:</b> ${escapeHtml(domain)}<br>
     <b>Status:</b> Format valid<br>
-    <b>Mode:</b> Preview SEO-style frontend<br>
-    <b>Catatan:</b> Nilai di atas bukan data Ahrefs/Moz real. Untuk cek real, pakai tombol Open Ahrefs / Open Whois.
+    <b>Mode:</b> Normal checker<br>
+    <b>Hasil:</b> Tidak menampilkan angka palsu. Gunakan tombol shortcut untuk cek real.
   `;
 
   tips.innerHTML = `
-    <b>Shortcut:</b><br>
-    • Klik <b>Open Ahrefs</b> untuk cek domain di Ahrefs<br>
-    • Klik <b>Open Whois</b> untuk cek data domain / whois<br><br>
-    <b>Checklist SEO awal:</b><br>
-    • pakai HTTPS<br>
-    • title & meta description unik<br>
-    • sitemap dan robots.txt aktif<br>
-    • cek indexability setelah domain live
+    <b>Cek real:</b><br>
+    • DR / BACKLINK / TRAFFIC → Ahrefs<br>
+    • DA / PA → Moz<br>
+    • NAWALA → cek manual / TrustPositif<br><br>
+    <b>Catatan:</b><br>
+    • Versi ini sengaja normal dan jujur<br>
+    • Tidak ada metrik prediksi / fake score
   `;
 }
 
 function openAhrefsDomain() {
-  const domainInput = document.getElementById("domainInput");
-  if (!domainInput) return;
-
-  const domain = normalizeDomainInput(domainInput.value);
-  if (!domain) {
-    alert("Masukkan domain dulu.");
-    return;
-  }
-
+  const domain = normalizeDomainInput(document.getElementById("domainInput")?.value || "");
+  if (!domain) return alert("Masukkan domain dulu.");
   window.open(`https://ahrefs.com/site-explorer/overview/v2/subdomains/live?target=${encodeURIComponent(domain)}`, "_blank");
 }
 
-function openWhoisDomain() {
-  const domainInput = document.getElementById("domainInput");
-  if (!domainInput) return;
+function openMozDomain() {
+  const domain = normalizeDomainInput(document.getElementById("domainInput")?.value || "");
+  if (!domain) return alert("Masukkan domain dulu.");
+  window.open(`https://moz.com/domain-analysis?site=${encodeURIComponent(domain)}`, "_blank");
+}
 
-  const domain = normalizeDomainInput(domainInput.value);
-  if (!domain) {
-    alert("Masukkan domain dulu.");
-    return;
-  }
-
-  window.open(`https://www.whois.com/whois/${encodeURIComponent(domain)}`, "_blank");
+function openNawalaDomain() {
+  const domain = normalizeDomainInput(document.getElementById("domainInput")?.value || "");
+  if (!domain) return alert("Masukkan domain dulu.");
+  window.open("https://trustpositif.kominfo.go.id/", "_blank");
 }
 
 function resetDomainMetricsOnly() {
   setText("metricDR", "-");
   setText("metricDA", "-");
   setText("metricPA", "-");
-  setText("metricAGE", "-");
   setText("metricBL", "-");
   setText("metricTF", "-");
+  setText("metricNW", "-");
 }
 
 function resetDomainChecker() {
@@ -925,7 +903,7 @@ function resetDomainChecker() {
   if (input) input.value = "";
   resetDomainMetricsOnly();
   if (note) note.textContent = "Belum ada domain dicek.";
-  if (tips) tips.textContent = "Tips dan shortcut akan muncul di sini.";
+  if (tips) tips.textContent = "Shortcut dan catatan akan muncul di sini.";
 }
 
 function loadMusic(event) {
@@ -963,15 +941,13 @@ function runTerminalCommand() {
   let response = "";
 
   if (cmd === "help") {
-    response = "Available commands: help, status, clear, seo-scan, whoami, pro";
+    response = "Available commands: help, status, clear, seo-scan, whoami";
   } else if (cmd === "status") {
-    response = "System online | theme neon tosca | build pro | storage local mode";
+    response = "System online | theme neon tosca | build stable | storage local mode";
   } else if (cmd === "seo-scan") {
-    response = "Scanner PRO ready. Use the Scanner tab.";
+    response = "Scanner module ready. Use the Scanner tab.";
   } else if (cmd === "whoami") {
     response = "Current user: " + (localStorage.getItem("xuUser") || "Guest");
-  } else if (cmd === "pro") {
-    response = "Word to HTML PRO, Scanner PRO, Domain Checker+, Uploader local mode active.";
   } else if (cmd === "clear") {
     output.textContent = "Xu_SEO terminal initialized...\nType: help";
     input.value = "";
