@@ -1,0 +1,453 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>XU SEO - 19 Tools</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <div class="anime-bg"></div>
+  <div class="app-shell">
+    <header class="topbar glass">
+      <div class="brand-wrap">
+        <div class="brand-badge">XU</div>
+        <div>
+          <h1>XU SEO WORKSPACE</h1>
+          <p>19 TOOLS · RAINBOW UI · RED ANIME MODE</p>
+        </div>
+      </div>
+      <div class="top-actions">
+        <span class="chip" id="userStatus">User: Guest</span>
+        <button class="btn rainbow" type="button" onclick="showView('dashboard')">Dashboard</button>
+        <button class="btn ghost" type="button" onclick="showView('settings')">Theme</button>
+      </div>
+    </header>
+
+    <div class="main-grid">
+      <aside class="sidebar glass">
+        <div class="side-head">
+          <h3>TOOLS</h3>
+          <div class="tool-total">19</div>
+        </div>
+        <div class="nav-list">
+          <button class="nav-btn active" data-view-target="dashboard" onclick="showView('dashboard')">🏠 Dashboard</button>
+          <button class="nav-btn" data-view-target="auth" onclick="showView('auth')">🔐 Auth</button>
+          <button class="nav-btn" data-view-target="notepad" onclick="showView('notepad')">📒 Notepad</button>
+          <button class="nav-btn" data-view-target="wordcounter" onclick="showView('wordcounter')">📝 Word Counter</button>
+          <button class="nav-btn" data-view-target="filemanager" onclick="showView('filemanager')">📁 File Manager</button>
+          <button class="nav-btn" data-view-target="uploader" onclick="showView('uploader')">🚀 Uploader</button>
+          <button class="nav-btn" data-view-target="calculator" onclick="showView('calculator')">🧮 Calculator</button>
+          <button class="nav-btn" data-view-target="wordtohtml" onclick="showView('wordtohtml')">🔤 Word to HTML</button>
+          <button class="nav-btn" data-view-target="scanner" onclick="showView('scanner')">🛡️ Scanner</button>
+          <button class="nav-btn" data-view-target="domainchecker" onclick="showView('domainchecker')">🌐 Domain Checker</button>
+          <button class="nav-btn" data-view-target="musicplayer" onclick="showView('musicplayer')">🎵 Music Player</button>
+          <button class="nav-btn" data-view-target="terminal" onclick="showView('terminal')">⌨️ Terminal</button>
+          <button class="nav-btn" data-view-target="settings" onclick="showView('settings')">⚙️ Settings</button>
+          <button class="nav-btn" data-view-target="phpobfuscator" onclick="showView('phpobfuscator')">🧬 PHP Obfuscator</button>
+          <button class="nav-btn" data-view-target="base64" onclick="showView('base64')">🔐 Base64</button>
+          <button class="nav-btn" data-view-target="aitools" onclick="showView('aitools')">🤖 AI Tools</button>
+          <button class="nav-btn" data-view-target="seoxu" onclick="showView('seoxu')">🚦 SEO-XU</button>
+          <button class="nav-btn" data-view-target="htmlcleaner" onclick="showView('htmlcleaner')">🧼 HTML Cleaner</button>
+          <button class="nav-btn" data-view-target="keyworddensity" onclick="showView('keyworddensity')">📊 Keyword Density</button>
+        </div>
+      </aside>
+
+      <main class="content">
+        <section class="view active" id="view-dashboard">
+          <div class="hero-grid">
+            <div class="panel glass">
+              <span class="eyebrow">BUILD ACTIVE</span>
+              <h2>19 tools jalan dalam satu dashboard.</h2>
+              <p>Semua tool aktif, tema merah anime, tombol rainbow bergerak, dan logic dijaga tetap ringan. Manusia akhirnya minta yang masuk akal juga.</p>
+              <div class="search-row">
+                <input id="toolSearch" type="text" placeholder="Cari tools..." oninput="filterTools()" />
+                <button class="btn ghost" onclick="resetSearch()">Reset</button>
+              </div>
+            </div>
+            <div class="panel glass stats-wrap">
+              <div class="stat-card"><span>Total Tools</span><strong id="toolCount">19</strong></div>
+              <div class="stat-card"><span>Theme</span><strong>RAINBOW</strong></div>
+              <div class="stat-card"><span>Mode</span><strong>FRONTEND</strong></div>
+              <div class="stat-card"><span>User</span><strong id="activeUserBox">Guest</strong></div>
+            </div>
+          </div>
+          <div class="panel glass">
+            <div class="section-head">
+              <div>
+                <h3>Quick Launch</h3>
+                <p>Semua tool inti dan tool baru bisa dibuka dari sini.</p>
+              </div>
+            </div>
+            <div class="tool-grid" id="toolGrid"></div>
+          </div>
+        </section>
+
+        <section class="view" id="view-auth">
+          <div class="panel glass">
+            <span class="eyebrow">AUTH</span>
+            <h2>Login & Register Lokal</h2>
+            <div class="dual-grid">
+              <div class="card">
+                <h4>Login</h4>
+                <input id="loginUsername" type="text" placeholder="Username" />
+                <input id="loginPassword" type="password" placeholder="Password" />
+                <button class="btn rainbow" onclick="simulateLogin()">Masuk</button>
+              </div>
+              <div class="card">
+                <h4>Register</h4>
+                <input id="registerUsername" type="text" placeholder="Username" />
+                <input id="registerEmail" type="email" placeholder="Email" />
+                <input id="registerPassword" type="password" placeholder="Password" />
+                <button class="btn rainbow" onclick="simulateRegister()">Daftar</button>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section class="view" id="view-notepad">
+          <div class="panel glass">
+            <span class="eyebrow">NOTES</span>
+            <h2>Notepad</h2>
+            <input id="noteTitle" type="text" placeholder="Judul catatan" />
+            <textarea id="notepadText" placeholder="Tulis catatan..."></textarea>
+            <div class="action-row">
+              <button class="btn rainbow" onclick="saveNote()">Simpan</button>
+              <button class="btn ghost" onclick="clearNote()">Hapus</button>
+            </div>
+          </div>
+        </section>
+
+        <section class="view" id="view-wordcounter">
+          <div class="panel glass">
+            <span class="eyebrow">TEXT</span>
+            <h2>Word Counter</h2>
+            <textarea id="wordCounterInput" placeholder="Tempel teks di sini..."></textarea>
+            <div class="counter-grid">
+              <div class="stat-card"><span>Kata</span><strong id="countWords">0</strong></div>
+              <div class="stat-card"><span>Karakter</span><strong id="countChars">0</strong></div>
+              <div class="stat-card"><span>Paragraf</span><strong id="countParagraphs">0</strong></div>
+              <div class="stat-card"><span>Baca</span><strong id="countRead">0 dtk</strong></div>
+            </div>
+          </div>
+        </section>
+
+        <section class="view" id="view-filemanager">
+          <div class="panel glass">
+            <span class="eyebrow">FILES</span>
+            <h2>File Manager Lokal</h2>
+            <div class="dual-grid">
+              <div class="card">
+                <h4>Upload File</h4>
+                <input type="file" id="fileInput" multiple />
+                <button class="btn ghost" onclick="clearFiles()">Reset File</button>
+              </div>
+              <div class="card">
+                <h4>Upload Folder</h4>
+                <input type="file" id="folderInput" webkitdirectory directory multiple />
+                <button class="btn ghost" onclick="clearFolder()">Reset Folder</button>
+              </div>
+            </div>
+            <div id="fileList" class="stack-list empty-box">Belum ada file yang dipilih.</div>
+          </div>
+        </section>
+
+        <section class="view" id="view-uploader">
+          <div class="panel glass">
+            <span class="eyebrow">UPLOAD</span>
+            <h2>Uploader Lokal</h2>
+            <div class="dual-grid">
+              <div class="card">
+                <div id="dropzone" class="dropzone">Drop file di sini atau pilih manual</div>
+                <input type="file" id="uploaderInput" hidden />
+                <div class="action-row">
+                  <button class="btn rainbow" onclick="pickUploader()">Pilih File</button>
+                  <button class="btn ghost" onclick="resetUploader()">Reset</button>
+                </div>
+                <div id="uploaderMeta" class="empty-box">Belum ada file dipilih.</div>
+                <div class="progress-shell"><div id="uploadBar" class="progress-bar"></div></div>
+                <div id="uploadPercent" class="tiny-text">0%</div>
+                <div id="uploaderPreview" class="preview-box">Preview akan muncul di sini.</div>
+              </div>
+              <div class="card">
+                <h4>Generated Output</h4>
+                <textarea id="uploadUrl" readonly placeholder="Object URL"></textarea>
+                <textarea id="uploadFilename" readonly placeholder="Nama file"></textarea>
+                <textarea id="uploadHtmlEmbed" readonly placeholder="HTML embed"></textarea>
+                <textarea id="uploadMarkdown" readonly placeholder="Markdown embed"></textarea>
+                <div class="action-row">
+                  <button class="btn ghost" onclick="copyUploaderField('uploadUrl')">Copy URL</button>
+                  <button class="btn ghost" onclick="copyUploaderField('uploadFilename')">Copy Name</button>
+                  <button class="btn ghost" onclick="copyUploaderField('uploadHtmlEmbed')">Copy HTML</button>
+                  <button class="btn ghost" onclick="copyUploaderField('uploadMarkdown')">Copy MD</button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section class="view" id="view-calculator">
+          <div class="panel glass">
+            <span class="eyebrow">MATH</span>
+            <h2>Calculator</h2>
+            <input id="calcDisplay" type="text" placeholder="0" />
+            <div class="calc-grid" id="calcButtons"></div>
+            <div class="action-row">
+              <button class="btn rainbow" onclick="calculateResult()">Hitung</button>
+              <button class="btn ghost" onclick="backspaceCalc()">Backspace</button>
+              <button class="btn ghost" onclick="clearCalc()">Clear</button>
+            </div>
+          </div>
+        </section>
+
+        <section class="view" id="view-wordtohtml">
+          <div class="panel glass">
+            <span class="eyebrow">EDITOR</span>
+            <h2>Word to HTML</h2>
+            <div class="editor-toolbar">
+              <button class="btn ghost" onclick="editorCommand('bold')">B</button>
+              <button class="btn ghost" onclick="editorCommand('italic')">I</button>
+              <button class="btn ghost" onclick="editorCommand('underline')">U</button>
+              <button class="btn ghost" onclick="editorCommand('insertUnorderedList')">UL</button>
+              <button class="btn ghost" onclick="editorCommand('insertOrderedList')">OL</button>
+              <button class="btn ghost" onclick="editorCommand('justifyLeft')">Left</button>
+              <button class="btn ghost" onclick="editorCommand('justifyCenter')">Center</button>
+              <button class="btn ghost" onclick="editorCommand('justifyRight')">Right</button>
+              <button class="btn ghost" onclick="editorCommand('justifyFull')">Justify</button>
+              <button class="btn ghost" onclick="insertEditorLink()">Link</button>
+              <button class="btn ghost" onclick="insertTablePrompt()">Table</button>
+              <button class="btn ghost" onclick="cleanWordHtml()">Clean HTML</button>
+            </div>
+            <div class="dual-grid">
+              <div class="card">
+                <div id="richEditor" class="rich-editor" contenteditable="true"></div>
+                <div class="action-row">
+                  <button class="btn rainbow" onclick="convertWordToHtml()">Convert</button>
+                  <button class="btn ghost" onclick="clearWordHtml()">Clear</button>
+                  <button class="btn ghost" onclick="copyEditorPlainText()">Copy Text</button>
+                </div>
+              </div>
+              <div class="card">
+                <textarea id="wordHtmlOutput" readonly placeholder="Hasil HTML akan muncul di sini..."></textarea>
+                <div class="action-row">
+                  <button class="btn ghost" onclick="copyWordHtml()">Copy HTML</button>
+                  <button class="btn ghost" onclick="downloadWordHtml()">Download HTML</button>
+                </div>
+              </div>
+            </div>
+            <div id="wordHtmlPreview" class="preview-box">Preview HTML akan muncul di sini.</div>
+          </div>
+        </section>
+
+        <section class="view" id="view-scanner">
+          <div class="panel glass">
+            <span class="eyebrow">SCAN</span>
+            <h2>Scanner</h2>
+            <textarea id="scannerInput" placeholder="Paste code / text di sini..."></textarea>
+            <div class="action-row">
+              <input type="file" id="scannerFile" />
+              <button class="btn rainbow" onclick="runScanner()">Scan</button>
+              <button class="btn ghost" onclick="clearScanner()">Clear</button>
+            </div>
+            <div id="scannerSummary" class="empty-box">Belum ada input untuk discan.</div>
+            <div id="scannerScoreBoard" class="counter-grid"></div>
+            <div id="scannerResult" class="stack-list"></div>
+            <div id="scannerPreview" class="preview-box">Belum ada preview hasil scan.</div>
+          </div>
+        </section>
+
+        <section class="view" id="view-domainchecker">
+          <div class="panel glass">
+            <span class="eyebrow">DOMAIN</span>
+            <h2>Domain Checker</h2>
+            <input id="domainInput" type="text" placeholder="contoh: example.com" />
+            <div class="action-row">
+              <button class="btn rainbow" onclick="runDomainChecker()">Check Domain</button>
+              <button class="btn ghost" onclick="openDomainHelper('whois')">WHOIS</button>
+              <button class="btn ghost" onclick="openDomainHelper('nawala')">Kominfo</button>
+            </div>
+            <div class="counter-grid">
+              <div class="stat-card"><span>DR</span><strong id="domainDR">-</strong></div>
+              <div class="stat-card"><span>DA</span><strong id="domainDA">-</strong></div>
+              <div class="stat-card"><span>PA</span><strong id="domainPA">-</strong></div>
+              <div class="stat-card"><span>Traffic</span><strong id="domainTraffic">-</strong></div>
+              <div class="stat-card"><span>Backlink</span><strong id="domainBacklink">-</strong></div>
+              <div class="stat-card"><span>Nawala</span><strong id="domainNawala">-</strong></div>
+            </div>
+            <div id="domainResult" class="preview-box">Hasil checker domain normal akan muncul di sini.</div>
+          </div>
+        </section>
+
+        <section class="view" id="view-musicplayer">
+          <div class="panel glass">
+            <span class="eyebrow">MEDIA</span>
+            <h2>Music Player</h2>
+            <input type="file" id="musicFile" accept="audio/*" />
+            <audio id="musicPlayer" controls class="audio-player"></audio>
+            <div id="musicInfo" class="empty-box">Pilih file audio lokal.</div>
+          </div>
+        </section>
+
+        <section class="view" id="view-terminal">
+          <div class="panel glass">
+            <span class="eyebrow">CONSOLE</span>
+            <h2>Terminal Demo</h2>
+            <input id="terminalInput" type="text" placeholder="ketik help, date, clear, whoami" />
+            <div class="action-row">
+              <button class="btn rainbow" onclick="runTerminalCommand()">Run</button>
+              <button class="btn ghost" onclick="clearTerminal()">Clear</button>
+            </div>
+            <div id="terminalOutput" class="terminal-box">XU Terminal ready. Ketik help.</div>
+          </div>
+        </section>
+
+        <section class="view" id="view-settings">
+          <div class="panel glass">
+            <span class="eyebrow">SETTINGS</span>
+            <h2>Theme Settings</h2>
+            <div class="dual-grid">
+              <div class="card">
+                <h4>Background Speed</h4>
+                <input id="themeSpeed" type="range" min="6" max="26" value="14" />
+                <button class="btn rainbow" onclick="applyThemeSpeed()">Apply</button>
+              </div>
+              <div class="card">
+                <h4>Theme Notes</h4>
+                <p>Merah dominan, rainbow hidup, vibe anime cewek. Tombol juga ganti warna terus, karena apparently tombol diam itu terlalu membosankan buat spesies kalian.</p>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section class="view" id="view-phpobfuscator">
+          <div class="panel glass">
+            <span class="eyebrow">PHP</span>
+            <h2>PHP Obfuscator</h2>
+            <div class="dual-grid">
+              <div class="card">
+                <textarea id="phpInput" placeholder="Paste PHP code di sini..."></textarea>
+                <div class="action-row">
+                  <button class="btn rainbow" onclick="obfuscatePHP()">Obfuscate</button>
+                  <button class="btn ghost" onclick="clearPhpObfuscator()">Clear</button>
+                </div>
+              </div>
+              <div class="card">
+                <textarea id="phpOutput" readonly placeholder="Hasil obfuscate..."></textarea>
+                <div class="action-row">
+                  <button class="btn ghost" onclick="copyField('phpOutput')">Copy</button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section class="view" id="view-base64">
+          <div class="panel glass">
+            <span class="eyebrow">ENCODE</span>
+            <h2>Base64 Encode / Decode</h2>
+            <div class="dual-grid">
+              <div class="card">
+                <textarea id="base64Input" placeholder="Text atau Base64..."></textarea>
+                <input type="file" id="base64File" />
+                <div class="action-row">
+                  <button class="btn rainbow" onclick="encodeBase64()">Encode</button>
+                  <button class="btn ghost" onclick="decodeBase64()">Decode</button>
+                  <button class="btn ghost" onclick="clearBase64()">Clear</button>
+                </div>
+              </div>
+              <div class="card">
+                <textarea id="base64Output" readonly placeholder="Output..."></textarea>
+                <div class="action-row">
+                  <button class="btn ghost" onclick="copyField('base64Output')">Copy</button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section class="view" id="view-aitools">
+          <div class="panel glass">
+            <span class="eyebrow">AI</span>
+            <h2>AI Tools Hub</h2>
+            <div class="tool-grid ai-grid">
+              <div class="card"><h4>ChatGPT</h4><p>Shortcut resmi untuk kerja teks.</p><button class="btn rainbow" onclick="openAI('chatgpt')">Open</button></div>
+              <div class="card"><h4>Gemini</h4><p>Shortcut resmi untuk kerja cepat.</p><button class="btn rainbow" onclick="openAI('gemini')">Open</button></div>
+              <div class="card"><h4>Sora / Video</h4><p>Tempat catat prompt video atau image workflow.</p><button class="btn rainbow" onclick="openAI('openai')">Open OpenAI</button></div>
+              <div class="card full-span">
+                <h4>SEO Prompt Helper</h4>
+                <input id="aiKeyword" type="text" placeholder="Masukkan keyword..." />
+                <textarea id="aiPromptOutput" readonly placeholder="Prompt SEO akan muncul di sini..."></textarea>
+                <div class="action-row">
+                  <button class="btn rainbow" onclick="generateSeoPrompt()">Generate Prompt</button>
+                  <button class="btn ghost" onclick="copyField('aiPromptOutput')">Copy</button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section class="view" id="view-seoxu">
+          <div class="panel glass">
+            <span class="eyebrow">SEO-XU</span>
+            <h2>SEO-XU</h2>
+            <textarea id="seoXuUrls" placeholder="Masukkan 1 atau banyak domain. Pisahkan per baris."></textarea>
+            <div class="action-row">
+              <button class="btn rainbow" onclick="runSeoXu()">Analyze</button>
+              <button class="btn ghost" onclick="clearSeoXu()">Clear</button>
+            </div>
+            <div class="seo-block-grid">
+              <div class="card"><h4>1. Google Index Checker</h4><div id="seoXuIndex" class="mini-result">Belum ada hasil.</div></div>
+              <div class="card"><h4>2. Robots + Sitemap</h4><div id="seoXuRobots" class="mini-result">Belum ada hasil.</div></div>
+              <div class="card"><h4>3. Keyword Density</h4><div id="seoXuDensity" class="mini-result">Belum ada hasil.</div></div>
+              <div class="card"><h4>4. HTML Cleaner</h4><div id="seoXuCleaner" class="mini-result">Belum ada hasil.</div></div>
+              <div class="card"><h4>5. Simple SEO Audit</h4><div id="seoXuAudit" class="mini-result">Belum ada hasil.</div></div>
+            </div>
+          </div>
+        </section>
+
+        <section class="view" id="view-htmlcleaner">
+          <div class="panel glass">
+            <span class="eyebrow">CLEANER</span>
+            <h2>HTML Cleaner</h2>
+            <div class="dual-grid">
+              <div class="card">
+                <textarea id="htmlCleanerInput" placeholder="Paste HTML di sini..."></textarea>
+                <div class="action-row">
+                  <button class="btn rainbow" onclick="runHtmlCleaner()">Clean</button>
+                  <button class="btn ghost" onclick="clearHtmlCleaner()">Clear</button>
+                </div>
+              </div>
+              <div class="card">
+                <textarea id="htmlCleanerOutput" readonly placeholder="Hasil clean HTML..."></textarea>
+                <div class="action-row">
+                  <button class="btn ghost" onclick="copyField('htmlCleanerOutput')">Copy</button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section class="view" id="view-keyworddensity">
+          <div class="panel glass">
+            <span class="eyebrow">DENSITY</span>
+            <h2>Keyword Density</h2>
+            <div class="dual-grid">
+              <div class="card">
+                <textarea id="keywordDensityInput" placeholder="Paste artikel / teks di sini..."></textarea>
+                <div class="action-row">
+                  <button class="btn rainbow" onclick="runKeywordDensity()">Analyze</button>
+                  <button class="btn ghost" onclick="clearKeywordDensity()">Clear</button>
+                </div>
+              </div>
+              <div class="card">
+                <textarea id="keywordDensityOutput" readonly placeholder="Top keyword density..."></textarea>
+              </div>
+            </div>
+          </div>
+        </section>
+      </main>
+    </div>
+  </div>
+  <script src="app-final.js"></script>
+</body>
+</html>
