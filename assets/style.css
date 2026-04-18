@@ -540,3 +540,69 @@ textarea::placeholder { color: #75b4ac; }
   .calc-grid { grid-template-columns: 1fr; }
   .brand h1 { font-size: 26px; }
 }
+
+.wordhtml-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1.35fr) minmax(320px, .9fr);
+  gap: 16px;
+}
+
+.editor-card,
+.output-card {
+  min-width: 0;
+}
+
+#calcDisplay {
+  font-size: 28px;
+  font-weight: 800;
+  text-align: right;
+}
+
+.editor-toolbar {
+  padding: 2px 0 4px;
+}
+
+.editor-toolbar .small-btn {
+  min-width: 56px;
+}
+
+.rich-editor {
+  min-height: 460px;
+  max-height: 70vh;
+  overflow: auto;
+  font-size: 16px;
+}
+
+.rich-editor p,
+.rich-editor h1,
+.rich-editor h2,
+.rich-editor h3,
+.rich-editor blockquote,
+.rich-editor ul,
+.rich-editor ol {
+  margin: 0 0 14px;
+}
+
+.rich-editor table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 14px 0;
+}
+
+.rich-editor td,
+.rich-editor th {
+  border: 1px solid rgba(125,255,238,.25);
+  padding: 8px;
+}
+
+#wordHtmlOutput {
+  min-height: 460px;
+  font-family: Consolas, monospace;
+  white-space: pre;
+}
+
+@media (max-width: 1160px) {
+  .wordhtml-layout {
+    grid-template-columns: 1fr;
+  }
+}
